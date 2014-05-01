@@ -9,6 +9,6 @@ IMPLEMENTASI REINFORCEMENT LEARNING DALAM PERMAINAN CAT AND MOUSE
 2. Ihbla  NIM2
 3. Nave   NIM3
 4. Arkid  NIM4
-5. Igoy   NIM%
+5. Igoy   NIM5
 
 kucing sama tikus belajar intelijensia buatan
