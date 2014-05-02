@@ -1,6 +1,10 @@
-import java.awt.*;
-import javax.swing.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.util.Enumeration;
+import java.util.Vector;
+
+import javax.swing.JPanel;
 
 public class boardPanel extends JPanel {
 	static final boolean USEVEC = true; // multiple painting per square (assume user paints each default)

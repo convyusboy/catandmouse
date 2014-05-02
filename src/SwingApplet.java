@@ -10,7 +10,7 @@ import java.awt.event.*;
 import java.util.*;
 
 public class SwingApplet extends JApplet implements ActionListener,Runnable{
-	static final int BW=300, BH=300, BX=8, BY=8, NUM_WALLS=20,
+	static final int BW=300, BH=300, BX=8, BY=8, NUM_WALLS=20, NC=1, NK=1,
 		SAMP_W = 100, SAMP_H = 100;
 	static final int DEF_EPOCHS = 50000;
 	static final long DELAY=500;
@@ -25,8 +25,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	Container instructions, playPanel, trainPanel, worldPanel;
 	
 	// world setting components
-	JTextField rows, cols, obst;
-	sampleWorlds samples;
+	JTextField rows, cols, obst, cheeses, cats;
 	boolean[][] selectedWalls;
 	ButtonGroup worldSelGroup;
 	boolean sampleWorld=true, designWorld=false;
@@ -73,11 +72,6 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		Image cheeseImg = getImage(getCodeBase(), "cheese.gif");
 		Image floorImg = getImage(getCodeBase(), "floor.gif");
 		
-/*		Image catImg = getImage(ClassLoader.getSystemResource("cat.gif"));
-		Image mouseImg = getImage(ClassLoader.getSystemResource("mouse.gif"));
-		Image wallImg = getImage(ClassLoader.getSystemResource("wall.gif"));
-		Image cheeseImg = getImage(ClassLoader.getSystemResource("cheese.gif"));*/
-
 		// set up board objects
 		cat = new boardObject(catImg);
 		mouse = new boardObject(mouseImg);
@@ -276,17 +270,9 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		startbutt.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				// selected world type, choose action
-				if (sampleWorld) {
-					worldInit(selectedWalls);
-				} else if (designWorld) {
-					// custom designed world
-				
-				} else {
-					// random world
 					worldInit(Integer.parseInt(cols.getText()),
 						Integer.parseInt(rows.getText()),
 						Integer.parseInt(obst.getText()));
-				}
 			}
 		});
 		worldPane.add(startbutt, BorderLayout.SOUTH);
@@ -296,29 +282,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	Container customWorld() {
 		JPanel pane = new JPanel();
 		pane.setLayout(new BorderLayout());
-		
-		JRadioButton random = new JRadioButton("Random World");
-		random.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e) {
-				// enable obstacles field
-				obst.setEnabled(true);
-				designWorld=false;
-				sampleWorld=false;
-			}
-		});
-		worldSelGroup.add(random);
-		pane.add(random, BorderLayout.NORTH);
-		
-		/*JRadioButton custom = new JRadioButton("Custom Design");
-		custom.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e) {
-				// enable obstacles field
-				obst.setEnabled(false);
-				designWorld=true;
-				sampleWorld=false;
-			}
-		});*/
-		
+				
 		// add controls to set dimensions
 		JPanel labelpane = new JPanel();
 		labelpane.setLayout(new GridLayout(0,2));
@@ -330,6 +294,8 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		rows = new JTextField(Integer.toString(BY), 20);
 		cols = new JTextField(Integer.toString(BX), 20);
 		obst = new JTextField(Integer.toString(NUM_WALLS), 20);
+		cheeses = new JTextField(Integer.toString(NC), 20);
+		cats = new JTextField(Integer.toString(NK), 20);
 		
 		labelpane.add(new JLabel("Rows:",JLabel.RIGHT));
 		labelpane.add(rows);
@@ -337,6 +303,10 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		labelpane.add(cols);
 		labelpane.add(new JLabel("Obstacles:",JLabel.RIGHT));
 		labelpane.add(obst);
+		labelpane.add(new JLabel("Cheese:",JLabel.RIGHT));
+		labelpane.add(cheeses);
+		labelpane.add(new JLabel("Cats:",JLabel.RIGHT));
+		labelpane.add(cats);
 		
 		//labelpane.setBorder(BorderFactory.createTitledBorder("Custom World"));
 		//labelpane.add(random);
@@ -354,48 +324,9 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		JPanel pane = new JPanel();
 		pane.setLayout(new GridLayout(0,3));
 
-		// grab each sample
-		samples = new sampleWorlds();
-		for (int i=0; i<samples.numSamples(); i++) {
-			JPanel thisPanel = new JPanel();
-			thisPanel.setLayout(new BorderLayout());
-			
-			// set first as selected
-			if (i==0) selectedWalls = samples.getWalls(i);
-			
-			JRadioButton b = new JRadioButton(samples.getTitle(i), (i==0));
-			b.setHorizontalAlignment(SwingConstants.LEFT);
-			b.setActionCommand(Integer.toString(i));
-			b.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e) {
-					int index = Integer.parseInt(e.getActionCommand());
-					selectedWalls = samples.getWalls(index);
-					sampleWorld=true;
-				}
-			});
-			
-			boolean[][] w = samples.getWalls(i);
-			
-			// create boardPanel object for this world
-			boardPanel pic = new boardPanel(back, w.length, w[0].length,SAMP_W, SAMP_H);
-			// add walls to panel
-			for (int x=0; x<w.length; x++)
-				for (int y=0; y<w.length; y++)
-					if (w[x][y]) pic.setSquare(wall, x, y);
-			
-			worldSelGroup.add(b); // add to button group
-			pic.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-			
-			thisPanel.add(pic, BorderLayout.CENTER);
-			thisPanel.add(b, BorderLayout.NORTH); // add to pane
-			thisPanel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-			
-			pane.add(thisPanel);
-		}
-
 		// add random world option
 		pane.add(customWorld());
-		pane.setBorder(BorderFactory.createTitledBorder("Choose World"));
+		pane.setBorder(BorderFactory.createTitledBorder("Color Your Worlds"));
 		return pane;
 	}
 	
