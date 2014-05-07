@@ -86,6 +86,8 @@ public class CatAndMouseGame extends Thread {
 	public Dimension getCheese() { return new Dimension(world.chx, world.chy); }
 	public Dimension getHole() { return new Dimension(world.hx, world.hy); }
 	public boolean[][] getWalls() { return world.walls; }
+	public boolean[][] getCats() { return world.cats; }
+	public boolean[][] getCheeses() { return world.cheeses; }
 	
 	public void makeMove() {
 		world.moveMouse();

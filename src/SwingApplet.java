@@ -105,20 +105,20 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		getContentPane().add(tabbedPane);
 	}
 
-	public void worldInit(int xdim, int ydim, int numwalls) { 
-		trainWorld = new CatAndMouseWorld(xdim, ydim,numwalls);
+	public void worldInit(int xdim, int ydim, int numwalls, int numcats, int numcheeses) { 
+		trainWorld = new CatAndMouseWorld(xdim, ydim, numwalls, numcats, numcheeses);
 		gameInit(xdim,ydim);
 	}
-	public void worldInit(boolean[][] givenWalls) {
-		int xdim = givenWalls.length, ydim = givenWalls[0].length;
-		trainWorld = new CatAndMouseWorld(xdim, ydim,givenWalls);
-		gameInit(xdim,ydim);		
-	}
+//	public void worldInit(boolean[][] givenWalls) {
+//		int xdim = givenWalls.length, ydim = givenWalls[0].length;
+//		trainWorld = new CatAndMouseWorld(xdim, ydim,givenWalls);
+//		gameInit(xdim,ydim);		
+//	}
 	private void gameInit(int xdim, int ydim) {
 		// disable this pane
 		tabbedPane.setEnabledAt(0,false);
 		
-		playWorld = new CatAndMouseWorld(xdim, ydim,trainWorld.walls);
+		playWorld = new CatAndMouseWorld(xdim, ydim,trainWorld.walls,trainWorld.cats,trainWorld.cheeses);
 
 		bp.setDimensions(xdim, ydim);
 		
@@ -176,11 +176,24 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 			}
 		}
 
+		// draw cheeses
+		boolean[][] ch = game.getCheeses(); 
+		for (int i=0; i<ch.length; i++) {
+			for (int j=0; j<ch[0].length; j++) {
+				if (ch[i][j]) bp.setSquare(cheese, i, j);
+			}
+		}
+
+		// draw cats
+		boolean[][] c = game.getCats(); 
+		for (int i=0; i<c.length; i++) {
+			for (int j=0; j<c[0].length; j++) {
+				if (c[i][j]) bp.setSquare(cat, i, j);
+			}
+		}
+
 		// draw objects (cat over mouse over cheese)
-		bp.setSquare(cheese, game.getCheese());
 		bp.setSquare(mouse, game.getMouse());
-		bp.setSquare(cat, game.getCat());
-		//bp.setSquare(hole, game.getHole());
 					
 		// display text representation
 		//System.out.println(bp);
@@ -272,7 +285,9 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 				// selected world type, choose action
 					worldInit(Integer.parseInt(cols.getText()),
 						Integer.parseInt(rows.getText()),
-						Integer.parseInt(obst.getText()));
+						Integer.parseInt(obst.getText()),
+						Integer.parseInt(cats.getText()),
+						Integer.parseInt(cheeses.getText()));
 			}
 		});
 		worldPane.add(startbutt, BorderLayout.SOUTH);

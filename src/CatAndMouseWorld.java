@@ -1,4 +1,4 @@
-import java.awt.*;
+import java.awt.Dimension;
 
 public class CatAndMouseWorld implements RLWorld{
 	public int bx, by;
@@ -12,26 +12,32 @@ public class CatAndMouseWorld implements RLWorld{
 	public int catscore = 0, mousescore = 0;
 	public int cheeseReward=50, deathPenalty=100;
 	
-	static final int NUM_OBJECTS=6, NUM_ACTIONS=8, WALL_TRIALS=100;
+	static final int NUM_OBJECTS=6, NUM_ACTIONS=8, WALL_TRIALS=100, CAT_TRIALS=100, CHEESE_TRIALS=100;
 	static final double INIT_VALS=0;
 		
 	int[] stateArray;
 	double waitingReward;
 	public boolean[][] walls;
+	public boolean[][] cats;
+	public boolean[][] cheeses;
 
-	public CatAndMouseWorld(int x, int y, int numWalls) {
+	public CatAndMouseWorld(int x, int y, int numWalls, int numCats, int numCheeses) {
 		bx = x;
 		by = y;
 		makeWalls(x,y,numWalls);
+		makeCheeses(x,y,numCheeses);
+		makeCats(x,y,numCats);
 		
 		resetState();
 	}
 	
-	public CatAndMouseWorld(int x, int y, boolean[][] newwalls) {
+	public CatAndMouseWorld(int x, int y, boolean[][] newwalls, boolean[][] newcats, boolean[][] newcheeses) {
 		bx = x;
 		by = y;
 		
 		walls = newwalls;
+		cats = newcats;
+		cheeses = newcheeses;
 		
 		resetState();
 	}
@@ -61,7 +67,7 @@ public class CatAndMouseWorld implements RLWorld{
 			//System.err.println("Illegal action: "+action);
 		}
 		// update world
-		moveCat();
+//		moveCat();
 		waitingReward = calcReward();
 		
 		// if mouse has cheese, relocate cheese
@@ -214,7 +220,7 @@ public class CatAndMouseWorld implements RLWorld{
 	void moveCat() {
 		Dimension newPos = getNewPos(cx, cy, mx, my);
 		cx = newPos.width;
-		cy = newPos.height;		
+		cy = newPos.height;					
 	}
 
 	void moveMouse() {
@@ -311,4 +317,80 @@ public class CatAndMouseWorld implements RLWorld{
 	}
 	/******** wall generating functions **********/
 
+	/******** cheese generating functions **********/
+	void makeCheeses(int xdim, int ydim, int numCheeses) {
+		cheeses = new boolean[xdim][ydim];
+		
+		// loop until a valid cheese set is found
+		for(int t=0; t<CHEESE_TRIALS; t++) {
+			// clear cheeses
+			for (int i=0; i<cheeses.length; i++) {
+				for (int j=0; j<cheeses[0].length; j++) cheeses[i][j] = false;
+			}
+			
+			float xmid = xdim/(float)2;
+			float ymid = ydim/(float)2;
+			
+			// randomly assign cheeses.  
+			for (int i=0; i<numCheeses; i++) {
+				Dimension d = getRandomPos();
+				
+				// encourage cheeses to be in center
+				double dx2 = Math.pow(xmid - d.width,2);
+				double dy2 = Math.pow(ymid - d.height,2);
+				double dropperc = Math.sqrt((dx2+dy2) / (xmid*xmid + ymid*ymid));
+				if (Math.random() < dropperc || walls[d.width][d.height]) {
+					// reject this cheese
+					i--;
+					continue;
+				}
+				
+				
+				cheeses[d.width][d.height] = true;
+			}
+						
+		}
+		
+	}
+	/******** cheese generating functions **********/
+	
+	/******** cat generating functions **********/
+	void makeCats(int xdim, int ydim, int numCats) {
+		cats = new boolean[xdim][ydim];
+		
+		// loop until a valid cat set is found
+		for(int t=0; t<CAT_TRIALS; t++) {
+			// clear cats
+			for (int i=0; i<cats.length; i++) {
+				for (int j=0; j<cats[0].length; j++) cats[i][j] = false;
+			}
+			
+			float xmid = xdim/(float)2;
+			float ymid = ydim/(float)2;
+			
+			// randomly assign cats.  
+			for (int i=0; i<numCats; i++) {
+				Dimension d = getRandomPos();
+				
+				// encourage cats to be in center
+				double dx2 = Math.pow(xmid - d.width,2);
+				double dy2 = Math.pow(ymid - d.height,2);
+				double dropperc = Math.sqrt((dx2+dy2) / (xmid*xmid + ymid*ymid));
+				if (Math.random() < dropperc || walls[d.width][d.height] || cheeses[d.width][d.height]) {
+					// reject this cat
+					i--;
+					continue;
+				}
+				
+				
+				cats[d.width][d.height] = true;
+			}
+			
+		}
+		
+	}
+	/******** cat generating functions **********/
+	
+
+	
 }
