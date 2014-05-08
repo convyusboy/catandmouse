@@ -2,10 +2,11 @@ import java.awt.Dimension;
 
 public class CatAndMouseWorld implements RLWorld{
 	public int bx, by;
-
+	public int numCats, numCheeses;
+	
 	public int mx, my;
-	public int cx, cy;
-	public int chx, chy;
+	public int cx[], cy[];
+	public int chx[], chy[];
 	public int hx, hy;
 	public boolean gotCheese = false;
 	
@@ -14,6 +15,7 @@ public class CatAndMouseWorld implements RLWorld{
 	
 	static final int NUM_OBJECTS=6, NUM_ACTIONS=8, WALL_TRIALS=100, CAT_TRIALS=100, CHEESE_TRIALS=100;
 	static final double INIT_VALS=0;
+	
 		
 	int[] stateArray;
 	double waitingReward;
@@ -25,8 +27,14 @@ public class CatAndMouseWorld implements RLWorld{
 		bx = x;
 		by = y;
 		makeWalls(x,y,numWalls);
-		makeCheeses(x,y,numCheeses);
-		makeCats(x,y,numCats);
+		
+		this.numCats = numCats;
+		this.numCheeses = numCheeses;
+		
+		cx = new int[numCats];
+		cy = new int[numCats];
+		chx = new int[numCheeses];
+		chy = new int[numCheeses];
 		
 		resetState();
 	}
@@ -38,6 +46,21 @@ public class CatAndMouseWorld implements RLWorld{
 		walls = newwalls;
 		cats = newcats;
 		cheeses = newcheeses;
+		
+		numCats = 0;
+		for(int i = 0; i < x; i++)
+			for(int j = 0; j < y; j++)
+				if (newcats[i][j]) numCats++;
+		
+		numCheeses = 0;
+		for(int i = 0; i < x; i++)
+			for(int j = 0; j < y; j++)
+				if (newcats[i][j]) numCheeses++;
+		
+		cx = new int[numCats];
+		cy = new int[numCats];
+		chx = new int[numCheeses];
+		chy = new int[numCheeses];
 		
 		resetState();
 	}
@@ -71,11 +94,13 @@ public class CatAndMouseWorld implements RLWorld{
 		waitingReward = calcReward();
 		
 		// if mouse has cheese, relocate cheese
+		/*
 		if ((mx==chx) && (my==chy)) {
 			d = getRandomPos();
 			chx = d.width;
 			chy = d.height;
 		}
+		*/
 		
 		/*// if cat has mouse, relocate mouse
 		if ((mx==cx) && (my==cy)) {
@@ -137,20 +162,20 @@ public class CatAndMouseWorld implements RLWorld{
 		stateArray = new int[NUM_OBJECTS];
 		stateArray[0] = mx;
 		stateArray[1] = my;
-		stateArray[2] = cx;
-		stateArray[3] = cy;
-		stateArray[4] = chx;
-		stateArray[5] = chy;
+		//stateArray[2] = cx;
+		//stateArray[3] = cy;
+		//stateArray[4] = chx;
+		//stateArray[5] = chy;
 		return stateArray;
 	}
 
 	public double calcReward() {
 		double newReward = 0;
-		if ((mx==chx)&&(my==chy)) {
+		if (isMouseOnCheese()) {
 			mousescore++;
 			newReward += cheeseReward;
 		}
-		if ((cx==mx) && (cy==my)) {
+		if (isMouseOnCat()) {
 			catscore++;
 			newReward -= deathPenalty;
 		}
@@ -158,16 +183,31 @@ public class CatAndMouseWorld implements RLWorld{
 		return newReward;		
 	}
 	
+	public boolean isMouseOnCat(){
+		for (int i = 0; i < numCats; i++){
+			if ((cx[i] == mx) && (cy[i] == my)) 
+				return true;
+		}
+		return false;
+	}
+	
+	public boolean isMouseOnCheese(){
+		for (int i = 0; i < numCheeses; i++){
+			if ((chx[i] == mx) && (chy[i] == my)) 
+				return true;
+		}
+		return false;
+	}
+	
 	public void setRandomPos() {
+		
+		makeCheeses(bx, by, numCheeses);
+		makeCats(bx,by,numCats);
+		
 		Dimension d = getRandomPos();
-		cx = d.width;
-		cy = d.height;
-		d = getRandomPos();
 		mx = d.width;
-		my = d.height;
-		d = getRandomPos();
-		chx = d.width;
-		chy = d.height;
+		my = d.height;	
+		
 		d = getRandomPos();
 		hx = d.width;
 		hy = d.height;
@@ -179,7 +219,8 @@ public class CatAndMouseWorld implements RLWorld{
 
 	boolean endGame() {
 		//return (((mx==hx)&&(my==hy)&& gotCheese) || ((cx==mx) && (cy==my)));
-		return ((cx==mx) && (cy==my));
+		
+		return isMouseOnCat();
 	}
 
 	Dimension getRandomPos() {
@@ -216,21 +257,22 @@ public class CatAndMouseWorld implements RLWorld{
 			if (legal(ax,ay)) return new Dimension(ax,ay);
 		}
 	}
-
+/*
 	void moveCat() {
 		Dimension newPos = getNewPos(cx, cy, mx, my);
 		cx = newPos.width;
 		cy = newPos.height;					
 	}
+*/
 
 	void moveMouse() {
-		Dimension newPos = getNewPos(mx, my, chx, chy);
+		Dimension newPos = getNewPos(mx, my, chx[0], chy[0]);
 		mx = newPos.width;
 		my = newPos.height;
 	}
 	
 	int mouseAction() {
-		Dimension newPos = getNewPos(mx, my, chx, chy);
+		Dimension newPos = getNewPos(mx, my, chx[0], chy[0]);
 		return getAction(newPos.width-mx,newPos.height-my);
 	}
 	/******** end heuristic functions ***********/
@@ -347,12 +389,13 @@ public class CatAndMouseWorld implements RLWorld{
 				
 				
 				cheeses[d.width][d.height] = true;
+				chx[i] = d.width;
+				chy[i] = d.height;
 			}
 						
 		}
 		
 	}
-	/******** cheese generating functions **********/
 	
 	/******** cat generating functions **********/
 	void makeCats(int xdim, int ydim, int numCats) {
@@ -384,6 +427,8 @@ public class CatAndMouseWorld implements RLWorld{
 				
 				
 				cats[d.width][d.height] = true;
+				cx[i] = d.width;
+				cy[i] = d.height;
 			}
 			
 		}

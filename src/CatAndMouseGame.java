@@ -82,8 +82,8 @@ public class CatAndMouseGame extends Thread {
 	public void setPolicy(RLPolicy p) {	policy = p; }
 	
 	public Dimension getMouse() { return new Dimension(world.mx, world.my); }
-	public Dimension getCat() { return new Dimension(world.cx, world.cy); }
-	public Dimension getCheese() { return new Dimension(world.chx, world.chy); }
+	public Dimension getCat(int i) { return new Dimension(world.cx[i], world.cy[i]); }
+	public Dimension getCheese(int i) { return new Dimension(world.chx[i], world.chy[i]); }
 	public Dimension getHole() { return new Dimension(world.hx, world.hy); }
 	public boolean[][] getWalls() { return world.walls; }
 	public boolean[][] getCats() { return world.cats; }
@@ -91,7 +91,7 @@ public class CatAndMouseGame extends Thread {
 	
 	public void makeMove() {
 		world.moveMouse();
-		world.moveCat();
+		//world.moveCat();
 	}
 
 	public void resetGame() {
