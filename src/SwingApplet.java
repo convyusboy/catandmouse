@@ -5,6 +5,7 @@
 
 import javax.swing.*;
 import javax.swing.event.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -29,6 +30,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	boolean[][] selectedWalls;
 	ButtonGroup worldSelGroup;
 	boolean sampleWorld=true, designWorld=false;
+	int posisiMouse;
 	
 	// instructions components
 	JLabel instructLabel, usageLabel;
@@ -52,12 +54,12 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	JLabel catscorelabel, mousescorelabel;
 	final String MS_TEXT = "Mouse Score:", CS_TEXT = "Cat Score:";
 	JSlider speed, smoothSlider;
-	Image catImg, mouseImg;
+	Image catImg, mouseImg[], mos;
 	chartPanel graphPanel;
 	JLabel winPerc;
 			
 	boardObject cat, mouse, cheese, back, hole, wall;
-
+	
 					
 	public SwingApplet() {
 		getRootPane().putClientProperty("defeatSystemEventQueueCheck",Boolean.TRUE);
@@ -67,14 +69,16 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	public void init() {
 		// load images
 		catImg = getImage(getCodeBase(), "cat.gif");
-		mouseImg = getImage(getCodeBase(), "mouse.gif");
+		mos = getImage(getCodeBase(), "mouse.gif");
+		mouseImg = new Image[8];
+			for (int i = 0; i < 8; i++) mouseImg[i] = getImage(getCodeBase(), (i+1) + ".gif");
 		Image wallImg = getImage(getCodeBase(), "wall.gif");
 		Image cheeseImg = getImage(getCodeBase(), "cheese.gif");
 		Image floorImg = getImage(getCodeBase(), "floor.gif");
 		
 		// set up board objects
 		cat = new boardObject(catImg);
-		mouse = new boardObject(mouseImg);
+		mouse = new mouseObject(mouseImg);
 		cheese = new boardObject(cheeseImg);
 		back = new boardObject(floorImg);
 		hole = new boardObject(Color.orange);
@@ -596,7 +600,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		
 		// score labels
 		ImageIcon cat = new ImageIcon(catImg);
-		ImageIcon mouse = new ImageIcon(mouseImg);
+		ImageIcon mouse = new ImageIcon(mos);
 		mousescorelabel = new JLabel(MS_TEXT, mouse, JLabel.RIGHT);
 		catscorelabel = new JLabel(CS_TEXT, cat, JLabel.RIGHT);
 
