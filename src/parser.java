@@ -7,8 +7,10 @@ public class parser {
 	private int cheese;
 	private int cat;
 	private int mouse_limit;
-	ArrayList<Point> pos_train;
-	ArrayList<Point> pos_play;
+	int bx;
+	int by;
+	private ArrayList<Point> pos_train;
+	private ArrayList<Point> pos_play;
 	private int[][] train_map;
 	
 	public parser(){
@@ -18,6 +20,8 @@ public class parser {
 		pos_train = new ArrayList<Point>();
 		pos_play = new ArrayList<Point>();
 		train_map = new int[10][10];
+		bx =0;
+		by =0;
 	}
 	
 	public void readFromFile(String namafile, int type){
@@ -122,13 +126,17 @@ public class parser {
 			{
 				//Variable penampung
 				String sCurrentLine;
-				for(int i = 0; i< 10; i++){
+				int i=0;
+				while((sCurrentLine=br.readLine())!=null){
 					sCurrentLine = br.readLine();
-					String[] numpang = sCurrentLine.split(" ", 10);
-					for(int j=0; j<10; j++){
+					String[] numpang = sCurrentLine.split(" ");
+					for(int j=0; j<numpang.length; j++){
 						train_map[i][j] = Integer.parseInt(numpang[j]);
 					}
+					i++;
+					bx = numpang.length;
 				}
+				by = i;
 			} 
 			catch (IOException e) {
 				e.printStackTrace();
@@ -140,6 +148,13 @@ public class parser {
 		return cheese;
 	}
 	
+	public int getBx(){
+		return bx;
+	}
+	
+	public int getBy(){
+		return by;
+	}
 	public int getCat(){
 		return cat;
 	}
@@ -158,36 +173,6 @@ public class parser {
 	
 	public int[][] getTrainMap(){
 		return train_map;
-	}
-	
-	public ArrayList<Point> getPlayAt(int begin, int length){
-		ArrayList<Point> temp = new ArrayList<Point>();
-		int it= begin;
-		while(temp.size()<length){
-			temp.add(pos_play.get(it));
-			if(it<pos_play.size()){
-				it++;
-			}
-			else{
-				it=0;
-			}
-		}
-		return temp;
-	}
-	
-	public ArrayList<Point> getTrainAt(int begin, int length){
-		ArrayList<Point> temp = new ArrayList<Point>();
-		int it= begin;
-		while(temp.size()<length){
-			temp.add(pos_play.get(it));
-			if(it<pos_play.size()){
-				it++;
-			}
-			else{
-				it=0;
-			}
-		}
-		return temp;
 	}
 	
 	public int getTrainMapAt(int x, int y){

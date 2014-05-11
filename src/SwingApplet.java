@@ -86,6 +86,9 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 			
 	boardObject cat, mouse, cheese, back, hole, wall;
 	
+	//Upload File
+	public String namafile1;
+	public String namafile2;
 					
 	public SwingApplet() {
 		getRootPane().putClientProperty("defeatSystemEventQueueCheck",Boolean.TRUE);
@@ -333,9 +336,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 			            //Opening the File Chosen
 						File file = fc.getSelectedFile();
 			            System.out.println("Opening: " + file.getName() + ".");
-			            parser parserai = new parser();
-			            parserai.readFromFile(file.getName(), 1);
-			            //parserai.PrintDetailParser(); //buat Debugging
+			            namafile1= file.getName();
 			        } else {
 			        	System.out.println("Open command cancelled by user.");
 			        }
@@ -350,9 +351,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 			            //Opening the File Chosen
 						File file = fc.getSelectedFile();
 			            System.out.println("Opening: " + file.getName() + ".");
-			            parser parserai = new parser();
-			            parserai.readFromFile(file.getName(), 2);
-			            //parserai.PrintDetailParser(); //buat Debugging
+			            namafile2 = file.getName();
 			        } else {
 			        	System.out.println("Open command cancelled by user.");
 			        }
