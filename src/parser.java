@@ -1,37 +1,23 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
  
 public class parser {
 	private int cheese;
 	private int cat;
 	private int mouse_limit;
-	private int[][] pos_train;
-	private int[][] pos_play;
+	ArrayList<Point> pos_train;
+	ArrayList<Point> pos_play;
 	private int[][] train_map;
 	
 	public parser(){
 		cheese = 0;
 		cat = 0;
 		mouse_limit = 0;
-		pos_train = new int[10][10];
-		for(int i=0; i< 10;i++){
-			for(int j=0; j< 10;j++){
-				pos_train[i][j]=0;
-			}
-		}
-		pos_play = new int[10][10];
-		for(int i=0; i< 10;i++){
-			for(int j=0; j< 10;j++){
-				pos_play[i][j]=0;
-			}
-		}
+		pos_train = new ArrayList<Point>();
+		pos_play = new ArrayList<Point>();
 		train_map = new int[10][10];
-		for(int i=0; i< 10;i++){
-			for(int j=0; j< 10;j++){
-				pos_play[i][j]=0;
-			}
-		}
 	}
 	
 	public void readFromFile(String namafile, int type){
@@ -74,7 +60,7 @@ public class parser {
 							}
 							else if(sCurrentLine.charAt(it)==')'){ 
 								temp_y = Integer.parseInt(temp);
-								pos_train[temp_x-1][temp_y-1] = 1;
+								pos_train.add(new Point(temp_x,temp_y));
 								temp_x = 0;
 								temp_y = 0;
 								it+=1;
@@ -109,7 +95,7 @@ public class parser {
 							}
 							else if(sCurrentLine.charAt(it)==')'){ 
 								temp_y = Integer.parseInt(temp);
-								pos_play[temp_x-1][temp_y-1] = 1;
+								pos_play.add(new Point(temp_x-1, temp_y-1));
 								temp_x = 0;
 								temp_y = 0;
 								it+=1;
@@ -136,9 +122,6 @@ public class parser {
 			{
 				//Variable penampung
 				String sCurrentLine;
-				int it =0;
-				int temp_x = 0, temp_y = 0;
-				String temp = "";
 				for(int i = 0; i< 10; i++){
 					sCurrentLine = br.readLine();
 					String[] numpang = sCurrentLine.split(" ", 10);
@@ -165,11 +148,11 @@ public class parser {
 		return mouse_limit;
 	}
 	
-	public int[][] getCheesePlay(){
+	public ArrayList<Point> getCheesePlay(){
 		return pos_play;
 	}
 	
-	public int[][] getCheeseTrain(){
+	public ArrayList<Point> getCheeseTrain(){
 		return pos_train;
 	}
 	
@@ -177,12 +160,34 @@ public class parser {
 		return train_map;
 	}
 	
-	public int getPlayCheeseAt(int x, int y){
-		return pos_play[x][y];
+	public ArrayList<Point> getPlayAt(int begin, int length){
+		ArrayList<Point> temp = new ArrayList<Point>();
+		int it= begin;
+		while(temp.size()<length){
+			temp.add(pos_play.get(it));
+			if(it<pos_play.size()){
+				it++;
+			}
+			else{
+				it=0;
+			}
+		}
+		return temp;
 	}
 	
-	public int getTrainCheeseAt(int x, int y){
-		return pos_train[x][y];
+	public ArrayList<Point> getTrainAt(int begin, int length){
+		ArrayList<Point> temp = new ArrayList<Point>();
+		int it= begin;
+		while(temp.size()<length){
+			temp.add(pos_play.get(it));
+			if(it<pos_play.size()){
+				it++;
+			}
+			else{
+				it=0;
+			}
+		}
+		return temp;
 	}
 	
 	public int getTrainMapAt(int x, int y){
@@ -192,19 +197,13 @@ public class parser {
 	public void PrintDetailParser(){
 		System.out.println("Cheese :"+ cheese);
 		System.out.println("Cat :"+ cat);
-		System.out.println("Cheese Pelatihan :");
-		for(int i=0; i< 10;i++){
-			for(int j=0; j< 10;j++){
-				System.out.print(pos_train[i][j]);
-			}
-			System.out.println(" ");
+		System.out.println("Posisi Pelatihan :");
+		for(int i=0; i< pos_train.size();i++){
+			System.out.println(pos_train.get(i).getX()+" , "+ pos_train.get(i).getY());
 		}
-		System.out.println("Cheese Permainan :");
-		for(int i=0; i< 10;i++){
-			for(int j=0; j< 10;j++){
-				System.out.print(pos_play[i][j]);
-			}
-			System.out.println(" ");
+		System.out.println("Posisi Permainan :");
+		for(int i=0; i< pos_play.size();i++){
+			System.out.println(pos_play.get(i).getX()+" , "+ pos_play.get(i).getY());
 		}
 		System.out.println("Peta Pelatihan :");
 		for(int i=0; i< 10;i++){
@@ -213,5 +212,31 @@ public class parser {
 			}
 			System.out.println(" ");
 		}
+	}
+}
+
+class Point{
+	int x;
+	int y;
+	
+	Point(){
+		x=0;
+		y=0;
+	}
+	Point(int _x, int _y){
+		x= _x;
+		y= _y;
+	}
+	public void setX(int _x){
+		x=_x;
+	}
+	public void setY(int _y){
+		y=_y;
+	}
+	public int getX(){
+		return x;
+	}
+	public int getY(){
+		return y;
 	}
 }

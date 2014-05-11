@@ -12,7 +12,7 @@ public class CatAndMouseWorld implements RLWorld{
 	public boolean gotCheese = false;
 	
 	public int catscore = 0, mousescore = 0;
-	public int cheeseReward=50, deathPenalty=100;
+	public int cheeseReward, deathPenalty;
 	
 	static final int NUM_OBJECTS=6, NUM_ACTIONS=8, WALL_TRIALS=100, CAT_TRIALS=100, CHEESE_TRIALS=100;
 	static final double INIT_VALS=0;
@@ -29,7 +29,17 @@ public class CatAndMouseWorld implements RLWorld{
 	public int getPosisiMouse(){
 		return posisiMouse;
 	}
-
+	
+	public int getCheeseReward(){
+		cheeseReward = bx+by;
+		return cheeseReward;	
+	}
+	
+	public int getDeathReward(){
+		deathPenalty = bx+by;
+		return deathPenalty;
+	}
+	
 	public CatAndMouseWorld(int x, int y, int numWalls, int numCats, int numCheeses) {
 		bx = x;
 		by = y;
@@ -207,13 +217,13 @@ public class CatAndMouseWorld implements RLWorld{
 	public double calcReward() {
 		double newReward = 0;
 		if (isMouseOnCheese()) {
-			mousescore++;
-			newReward += cheeseReward;
-		}
-		if (isMouseOnCat()) {
-			catscore++;
-			newReward -= deathPenalty;
-		}
+			newReward += getCheeseReward();
+		} else if (isMouseOnCat()) {
+			//catscore++;
+			newReward -= getDeathReward();
+		} /*else if(isMouseHitWall()){
+			newReward -= 2;
+		}*/ else mousescore--;
 		//if ((mx==hx)&&(my==hy)&&(gotCheese)) newReward += 100;
 		return newReward;		
 	}
@@ -231,6 +241,13 @@ public class CatAndMouseWorld implements RLWorld{
 			if ((chx[i] == mx) && (chy[i] == my)) 
 				return true;
 		}
+		return false;
+	}
+	
+	public boolean isMouseHitWall(){
+		
+		// 	nanti ini diisinya sama batasan temboknya apa
+		
 		return false;
 	}
 	
