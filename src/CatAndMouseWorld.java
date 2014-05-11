@@ -3,6 +3,7 @@ import java.awt.Dimension;
 public class CatAndMouseWorld implements RLWorld{
 	public int bx, by;
 	public int numCats, numCheeses;
+	public int posisiMouse;
 	
 	public int mx, my;
 	public int cx[], cy[];
@@ -11,10 +12,11 @@ public class CatAndMouseWorld implements RLWorld{
 	public boolean gotCheese = false;
 	
 	public int catscore = 0, mousescore = 0;
-	public int cheeseReward=50, deathPenalty=100;
+	public int cheeseReward, deathPenalty;
 	
 	static final int NUM_OBJECTS=6, NUM_ACTIONS=8, WALL_TRIALS=100, CAT_TRIALS=100, CHEESE_TRIALS=100;
 	static final double INIT_VALS=0;
+	static final int Kanan=0, KananAtas=1, Atas=2, KiriAtas=3, Kiri=4, KiriBawah=5, Bawah=6, KananBawah=7;
 	
 		
 	int[] stateArray;
@@ -22,7 +24,21 @@ public class CatAndMouseWorld implements RLWorld{
 	public boolean[][] walls;
 	public boolean[][] cats;
 	public boolean[][] cheeses;
-
+	
+	public int getPosisiMouse(int posisiMouse){
+		return posisiMouse;
+	}
+	
+	public int getCheeseReward(){
+		cheeseReward = bx+by;
+		return cheeseReward;	
+	}
+	
+	public int getDeathReward(){
+		deathPenalty = bx+by;
+		return deathPenalty;
+	}
+	
 	public CatAndMouseWorld(int x, int y, int numWalls, int numCats, int numCheeses) {
 		bx = x;
 		by = y;
@@ -77,11 +93,36 @@ public class CatAndMouseWorld implements RLWorld{
 		
 		return retDim;
 	}
-		
+	
+	public void rotateKiri(int posisiMouse){
+		if(posisiMouse==Kanan) posisiMouse=KananAtas;
+		else if (posisiMouse==KananAtas) posisiMouse=Atas;
+		else if (posisiMouse==Atas) posisiMouse=KiriAtas;
+		else if (posisiMouse==KiriAtas) posisiMouse=Kiri;
+		else if (posisiMouse==Kiri) posisiMouse=KiriBawah;
+		else if (posisiMouse==KiriBawah) posisiMouse=Bawah;
+		else if (posisiMouse==Bawah) posisiMouse=KananBawah;
+		else if (posisiMouse==KananBawah) posisiMouse=Kanan;
+	}
+	
+	public void rotateKanan(int posisiMouse){
+		if(posisiMouse==Kanan) posisiMouse=KananBawah;
+		else if (posisiMouse==KananBawah) posisiMouse=Bawah;
+		else if (posisiMouse==Bawah) posisiMouse=KiriBawah;
+		else if (posisiMouse==KiriBawah) posisiMouse=Kiri;
+		else if (posisiMouse==Kiri) posisiMouse=KiriAtas;
+		else if (posisiMouse==KiriAtas) posisiMouse=Atas;
+		else if (posisiMouse==Atas) posisiMouse=KananAtas;
+		else if (posisiMouse==KananAtas) posisiMouse=Kanan;
+	}
+	
 	// given action determine next state
-	public int[] getNextState(int action) {
+	public int[] getNextState(int posisiMouse) {
+		
+		// INI TINGGAL PILIH MAU ROTATE KEMANA
+		
 		// action is mouse action:  0=u 1=ur 2=r 3=dr ... 7=ul
-		Dimension d = getCoords(action);
+		Dimension d = getCoords(posisiMouse); 
 		int ax=d.width, ay=d.height;
 		if (legal(ax,ay)) {
 			// move agent
@@ -90,25 +131,9 @@ public class CatAndMouseWorld implements RLWorld{
 			//System.err.println("Illegal action: "+action);
 		}
 		// update world
-//		moveCat();
+
 		waitingReward = calcReward();
 		
-		// if mouse has cheese, relocate cheese
-		/*
-		if ((mx==chx) && (my==chy)) {
-			d = getRandomPos();
-			chx = d.width;
-			chy = d.height;
-		}
-		*/
-		
-		/*// if cat has mouse, relocate mouse
-		if ((mx==cx) && (my==cy)) {
-			d = getRandomPos();
-			mx = d.width;
-			my = d.height;
-		}*/
-
 		return getState();
 	}
 	
@@ -120,17 +145,17 @@ public class CatAndMouseWorld implements RLWorld{
 		return legal(d.width, d.height);
 	}
 	
-	Dimension getCoords(int action) {
+	Dimension getCoords(int posisiMouse) {
 		int ax=mx, ay=my;
-		switch(action) {
-			case 0: ay = my - 1; break;
-			case 1: ay = my - 1; ax = mx + 1; break;
-			case 2: ax = mx + 1; break;
-			case 3: ay = my + 1; ax = mx + 1; break;
-			case 4: ay = my + 1; break;
-			case 5: ay = my + 1; ax = mx - 1; break;
-			case 6: ax = mx - 1; break;
-			case 7: ay = my - 1; ax = mx - 1; break;
+		switch(posisiMouse) {
+			case Kanan: ay = mx + 1; break;
+			case KananAtas: ay = my + 1; ax = mx + 1; break;
+			case Atas: ax = my + 1; break;
+			case KiriAtas: ay = my + 1; ax = mx - 1; break;
+			case Kiri: ay = mx - 1; break;
+			case KiriBawah: ay = my - 1; ax = mx - 1; break;
+			case Bawah: ax = my - 1; break;
+			case KananBawah: ay = my - 1; ax = mx + 1; break;
 			default: //System.err.println("Invalid action: "+action);
 		}
 		return new Dimension(ax, ay);
@@ -172,13 +197,13 @@ public class CatAndMouseWorld implements RLWorld{
 	public double calcReward() {
 		double newReward = 0;
 		if (isMouseOnCheese()) {
-			mousescore++;
-			newReward += cheeseReward;
-		}
-		if (isMouseOnCat()) {
-			catscore++;
-			newReward -= deathPenalty;
-		}
+			newReward += getCheeseReward();
+		} else if (isMouseOnCat()) {
+			//catscore++;
+			newReward -= getDeathReward();
+		} /*else if(isMouseHitWall()){
+			newReward -= 2;
+		}*/ else mousescore--;
 		//if ((mx==hx)&&(my==hy)&&(gotCheese)) newReward += 100;
 		return newReward;		
 	}
@@ -196,6 +221,13 @@ public class CatAndMouseWorld implements RLWorld{
 			if ((chx[i] == mx) && (chy[i] == my)) 
 				return true;
 		}
+		return false;
+	}
+	
+	public boolean isMouseHitWall(){
+		
+		// 	nanti ini diisinya sama batasan temboknya apa
+		
 		return false;
 	}
 	

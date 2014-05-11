@@ -3,11 +3,38 @@
 // load for early releases
 //import com.sun.java.swing.*;
 
-import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.io.File;
+import java.util.Hashtable;
+import java.util.Vector;
+
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JApplet;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JRadioButton;
+import javax.swing.JSlider;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	static final int BW=300, BH=300, BX=8, BY=8, NUM_WALLS=20, NC=1, NK=1,
@@ -29,6 +56,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	boolean[][] selectedWalls;
 	ButtonGroup worldSelGroup;
 	boolean sampleWorld=true, designWorld=false;
+	int posisiMouse;
 	
 	// instructions components
 	JLabel instructLabel, usageLabel;
@@ -49,15 +77,15 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	JButton startbutt, stopbutt, pausebutt;
 	boardPanel bp;
 	public int mousescore=0, catscore =0;
-	JLabel catscorelabel, mousescorelabel;
+	JLabel mousescorelabel;
 	final String MS_TEXT = "Mouse Score:", CS_TEXT = "Cat Score:";
 	JSlider speed, smoothSlider;
-	Image catImg, mouseImg;
+	Image catImg, mouseImg[], mos;
 	chartPanel graphPanel;
 	JLabel winPerc;
 			
 	boardObject cat, mouse, cheese, back, hole, wall;
-
+	
 					
 	public SwingApplet() {
 		getRootPane().putClientProperty("defeatSystemEventQueueCheck",Boolean.TRUE);
@@ -67,14 +95,16 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	public void init() {
 		// load images
 		catImg = getImage(getCodeBase(), "cat.gif");
-		mouseImg = getImage(getCodeBase(), "mouse.gif");
+		mos = getImage(getCodeBase(), "mouse.gif");
+		mouseImg = new Image[8];
+			for (int i = 0; i < 8; i++) mouseImg[i] = getImage(getCodeBase(), (i+1) + ".gif");
 		Image wallImg = getImage(getCodeBase(), "wall.gif");
 		Image cheeseImg = getImage(getCodeBase(), "cheese.gif");
 		Image floorImg = getImage(getCodeBase(), "floor.gif");
 		
 		// set up board objects
 		cat = new boardObject(catImg);
-		mouse = new boardObject(mouseImg);
+		mouse = new mouseObject(mouseImg);
 		cheese = new boardObject(cheeseImg);
 		back = new boardObject(floorImg);
 		hole = new boardObject(Color.orange);
@@ -154,7 +184,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	public void updateBoard() {
 		// update score panels
 		mousescorelabel.setText(MS_TEXT+" "+Integer.toString(mousescore));
-		catscorelabel.setText(CS_TEXT+" "+Integer.toString(catscore));
+		//catscorelabel.setText(CS_TEXT+" "+Integer.toString(catscore));
 		if (game.newInfo) {
 			updateScore();
 			game.newInfo = false;
@@ -262,7 +292,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	}
 
 	void updateScore() {
-		double newScore = Math.round(1000*((double)mousescore)/(catscore + mousescore))/10;
+		double newScore = Math.round(1000*((double)mousescore));
 		winPerc.setText(Double.toString(newScore)+"%");
 		graphPanel.updateScores();
 		graphPanel.repaint();
@@ -275,10 +305,14 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		JPanel worldPane = new JPanel();
 		worldPane.setLayout(new BorderLayout());
 
-		worldSelGroup = new ButtonGroup();
+		//worldSelGroup = new ButtonGroup();
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new BorderLayout());
 		
 		worldPane.add(chooseWorld(), BorderLayout.CENTER);
 		//worldPane.add(customWorld(), BorderLayout.EAST);
+		JButton upbutt = new JButton("Click here to Upload File Type 1");
+		JButton loadbutt = new JButton("Click here to Upload File Type 2");
 		JButton startbutt = new JButton("Click here to start!");
 		startbutt.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
@@ -290,7 +324,44 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 						Integer.parseInt(cheeses.getText()));
 			}
 		});
+		upbutt.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				// Open File Chooser and Upload the txt file
+					JFileChooser fc = new JFileChooser();
+					int returnVal = fc.showOpenDialog(SwingApplet.this);
+					if (returnVal == JFileChooser.APPROVE_OPTION) {
+			            //Opening the File Chosen
+						File file = fc.getSelectedFile();
+			            System.out.println("Opening: " + file.getName() + ".");
+			            parser parserai = new parser();
+			            parserai.readFromFile(file.getName(), 1);
+			            //parserai.PrintDetailParser(); //buat Debugging
+			        } else {
+			        	System.out.println("Open command cancelled by user.");
+			        }
+			}
+		});
+		loadbutt.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				// Open File Chooser and Upload the txt file
+					JFileChooser fc = new JFileChooser();
+					int returnVal = fc.showOpenDialog(SwingApplet.this);
+					if (returnVal == JFileChooser.APPROVE_OPTION) {
+			            //Opening the File Chosen
+						File file = fc.getSelectedFile();
+			            System.out.println("Opening: " + file.getName() + ".");
+			            parser parserai = new parser();
+			            parserai.readFromFile(file.getName(), 2);
+			            //parserai.PrintDetailParser(); //buat Debugging
+			        } else {
+			        	System.out.println("Open command cancelled by user.");
+			        }
+			}
+		});
+		buttonPanel.add(upbutt,BorderLayout.NORTH);
+		buttonPanel.add(loadbutt,BorderLayout.SOUTH);
 		worldPane.add(startbutt, BorderLayout.SOUTH);
+		worldPane.add(buttonPanel,BorderLayout.EAST);
 		return worldPane;
 	}
 	
@@ -596,9 +667,9 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		
 		// score labels
 		ImageIcon cat = new ImageIcon(catImg);
-		ImageIcon mouse = new ImageIcon(mouseImg);
+		ImageIcon mouse = new ImageIcon(mos);
 		mousescorelabel = new JLabel(MS_TEXT, mouse, JLabel.RIGHT);
-		catscorelabel = new JLabel(CS_TEXT, cat, JLabel.RIGHT);
+		//catscorelabel = new JLabel(CS_TEXT, cat, JLabel.RIGHT);
 
 		// reset scores
 		//JPanel hbox = new JPanel();
@@ -607,7 +678,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		reset.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				mousescore = 0;
-				catscore = 0;
+				//catscore = 0;
 				updateBoard();
 			}			
 		});
@@ -619,7 +690,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 
 		scorePane.add(mousescorelabel);
 		scorePane.add(winPerc);
-		scorePane.add(catscorelabel);
+		//scorePane.add(catscorelabel);
 		scorePane.add(reset);
 		
 		scorePane.setBorder(BorderFactory.createTitledBorder("Scores"));
@@ -698,7 +769,7 @@ class chartPanel extends JPanel {
 		lastm=m; lastc=c;
 		double score;
 		if ((m+c)==0) score = 0;
-		else score = ((double)dm) / (dm+dc);
+		else score = ((double)m);
 		addScore(score);	
 	}
 	
