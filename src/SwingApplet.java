@@ -77,7 +77,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	JButton startbutt, stopbutt, pausebutt;
 	boardPanel bp;
 	public int mousescore=0, catscore =0;
-	JLabel catscorelabel, mousescorelabel;
+	JLabel mousescorelabel;
 	final String MS_TEXT = "Mouse Score:", CS_TEXT = "Cat Score:";
 	JSlider speed, smoothSlider;
 	Image catImg, mouseImg[], mos;
@@ -184,7 +184,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	public void updateBoard() {
 		// update score panels
 		mousescorelabel.setText(MS_TEXT+" "+Integer.toString(mousescore));
-		catscorelabel.setText(CS_TEXT+" "+Integer.toString(catscore));
+		//catscorelabel.setText(CS_TEXT+" "+Integer.toString(catscore));
 		if (game.newInfo) {
 			updateScore();
 			game.newInfo = false;
@@ -292,7 +292,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	}
 
 	void updateScore() {
-		double newScore = Math.round(1000*((double)mousescore)/(catscore + mousescore))/10;
+		double newScore = Math.round(1000*((double)mousescore));
 		winPerc.setText(Double.toString(newScore)+"%");
 		graphPanel.updateScores();
 		graphPanel.repaint();
@@ -669,7 +669,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		ImageIcon cat = new ImageIcon(catImg);
 		ImageIcon mouse = new ImageIcon(mos);
 		mousescorelabel = new JLabel(MS_TEXT, mouse, JLabel.RIGHT);
-		catscorelabel = new JLabel(CS_TEXT, cat, JLabel.RIGHT);
+		//catscorelabel = new JLabel(CS_TEXT, cat, JLabel.RIGHT);
 
 		// reset scores
 		//JPanel hbox = new JPanel();
@@ -678,7 +678,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		reset.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				mousescore = 0;
-				catscore = 0;
+				//catscore = 0;
 				updateBoard();
 			}			
 		});
@@ -690,7 +690,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 
 		scorePane.add(mousescorelabel);
 		scorePane.add(winPerc);
-		scorePane.add(catscorelabel);
+		//scorePane.add(catscorelabel);
 		scorePane.add(reset);
 		
 		scorePane.setBorder(BorderFactory.createTitledBorder("Scores"));
@@ -769,7 +769,7 @@ class chartPanel extends JPanel {
 		lastm=m; lastc=c;
 		double score;
 		if ((m+c)==0) score = 0;
-		else score = ((double)dm) / (dm+dc);
+		else score = ((double)m);
 		addScore(score);	
 	}
 	
