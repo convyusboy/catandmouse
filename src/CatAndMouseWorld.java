@@ -37,12 +37,12 @@ public class CatAndMouseWorld implements RLWorld{
 	}
 	
 	public int getCheeseReward(){
-		cheeseReward = bx+by;
+		cheeseReward = (bx+by);
 		return cheeseReward;	
 	}
 	
 	public int getDeathReward(){
-		deathPenalty = bx+by;
+		deathPenalty = (bx+by);
 		return deathPenalty;
 	}
 	
@@ -169,10 +169,7 @@ public class CatAndMouseWorld implements RLWorld{
 	}
 	
 	// given action determine next state
-	public int[] getNextState(int action) {
-		
-		// INI TINGGAL PILIH MAU ROTATE KEMANA
-		
+	public int[] getNextState(int action) {	
 		System.out.println("getnextstate, action = " + action);
 		// action is mouse action:  0=forward, 1=rotateKanan, 2=rotateKiri
 		switch (action){
@@ -193,12 +190,10 @@ public class CatAndMouseWorld implements RLWorld{
 			rotateKiri();
 			break;
 		}
-		
-		
 		// update world
 
 		waitingReward = calcReward();
-		
+		System.out.println(mousescore);
 		return getState();
 	}
 	
@@ -264,15 +259,13 @@ public class CatAndMouseWorld implements RLWorld{
 	public double calcReward() {
 		double newReward = 0;
 		if (isMouseOnCheese()) {
-			mousescore++;
 			newReward += getCheeseReward();
 		} else if (isMouseOnCat()) {
-			//catscore++;
 			newReward -= getDeathReward();
-		} /*else if(isMouseHitWall()){
-			newReward -= 2;
-		}*/ else mousescore--;
+		} else mousescore = -1;
+		
 		//if ((mx==hx)&&(my==hy)&&(gotCheese)) newReward += 100;
+		
 		return newReward;		
 	}
 	

@@ -64,8 +64,9 @@ public class CatAndMouseGame extends Thread {
 			} catch (InterruptedException e) {
 				System.out.println("interrupted.");
 			}
+			a.mousescore += world.mousescore;
 		}
-		a.mousescore += world.mousescore;
+		
 		//a.catscore += world.catscore;
 		
 		// turn off gameOn flag if only single game

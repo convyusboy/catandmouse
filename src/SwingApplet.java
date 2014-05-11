@@ -188,6 +188,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		// update score panels
 		mousescorelabel.setText(MS_TEXT+" "+Integer.toString(mousescore));
 		//catscorelabel.setText(CS_TEXT+" "+Integer.toString(catscore));
+		updateScore();
 		if (game.newInfo) {
 			updateScore();
 			game.newInfo = false;
@@ -296,7 +297,8 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	}
 
 	void updateScore() {
-		double newScore = Math.round(1000*((double)mousescore));
+		double newScore = mousescore;
+		System.out.println("haha " + mousescore);
 		winPerc.setText(Double.toString(newScore)+"%");
 		graphPanel.updateScores();
 		graphPanel.repaint();
@@ -769,7 +771,7 @@ class chartPanel extends JPanel {
 		lastm=m; lastc=c;
 		double score;
 		if ((m+c)==0) score = 0;
-		else score = ((double)m);
+		else score = ((double)dm);
 		addScore(score);	
 	}
 	
