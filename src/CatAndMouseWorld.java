@@ -17,7 +17,8 @@ public class CatAndMouseWorld implements RLWorld{
 	static final int NUM_OBJECTS=6, NUM_ACTIONS=8, WALL_TRIALS=100, CAT_TRIALS=100, CHEESE_TRIALS=100;
 	static final double INIT_VALS=0;
 	static final int Kanan=0, KananAtas=1, Atas=2, KiriAtas=3, Kiri=4, KiriBawah=5, Bawah=6, KananBawah=7;
-	
+
+	public int mouse_limit;
 		
 	int[] stateArray;
 	double waitingReward;
@@ -303,6 +304,7 @@ public class CatAndMouseWorld implements RLWorld{
 		Dimension newPos = getNewPos(mx, my, chx[0], chy[0]);
 		mx = newPos.width;
 		my = newPos.height;
+		
 	}
 	
 	int mouseAction() {
