@@ -298,7 +298,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 
 	void updateScore() {
 		double newScore = mousescore;
-		System.out.println("haha " + mousescore);
+		//System.out.println("haha " + mousescore);
 		winPerc.setText(Double.toString(newScore)+"%");
 		graphPanel.updateScores();
 		graphPanel.repaint();

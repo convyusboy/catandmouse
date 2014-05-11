@@ -1,11 +1,9 @@
 import java.awt.Dimension;
-import java.util.ArrayList;
 
 public class CatAndMouseWorld implements RLWorld{
 	public int bx, by;
 	public int numCats, numCheeses;
 	public int posisiMouse;
-	public int cntpos;
 	
 	public int mx, my;
 	public int cx[], cy[];
@@ -27,10 +25,6 @@ public class CatAndMouseWorld implements RLWorld{
 	public boolean[][] walls;
 	public boolean[][] cats;
 	public boolean[][] cheeses;
-	
-	//Information from Parser
-	public ArrayList<Point> set_pos;
-	public int[][] train_map;
 	
 	public int getPosisiMouse(){
 		return posisiMouse;
@@ -62,47 +56,6 @@ public class CatAndMouseWorld implements RLWorld{
 		System.out.println("constructor 1");
 		resetState();
 	}
-	
-	public CatAndMouseWorld(int x, int y,int numWalls, String namafile) {
-		parser parserai = new parser();
-		parserai.readFromFile(namafile, 1);
-		bx = x;
-		by = y;
-		makeWalls(x,y,numWalls);
-		
-		this.numCats = parserai.getCat();
-		this.numCheeses = parserai.getCheese();
-		
-		cx = new int[numCats];
-		cy = new int[numCats];
-		chx = new int[numCheeses];
-		chy = new int[numCheeses];
-		
-		set_pos = parserai.getCheesePlay();
-		train_map = parserai.getTrainMap();
-		resetState();
-	}
-	public CatAndMouseWorld(String namafile1, String namafile2, int numWalls) {
-		parser parserai = new parser();
-		parserai.readFromFile(namafile1, 1);
-		parserai.readFromFile(namafile2, 2);
-		
-		bx = parserai.getBx();
-		by = parserai.getBy();
-		
-		this.numCats = parserai.getCat();
-		this.numCheeses = parserai.getCheese();
-		
-		cx = new int[numCats];
-		cy = new int[numCats];
-		chx = new int[numCheeses];
-		chy = new int[numCheeses];
-		
-		set_pos = parserai.getCheeseTrain();
-		train_map = parserai.getTrainMap();
-		resetState();
-	}
-	
 	
 	public CatAndMouseWorld(int x, int y, boolean[][] newwalls, boolean[][] newcats, boolean[][] newcheeses) {
 		bx = x;
@@ -454,33 +407,41 @@ public class CatAndMouseWorld implements RLWorld{
 	/******** wall generating functions **********/
 
 	/******** cheese generating functions **********/
-	public ArrayList<Point> getPosAt(int begin, int length){
-		ArrayList<Point> temp = new ArrayList<Point>();
-		int it= begin;
-		while(temp.size()<length){
-			temp.add(set_pos.get(it));
-			it+= 1 %set_pos.size();
-		}
-		return temp;
-	}
-	
 	void makeCheeses(int xdim, int ydim, int numCheeses) {
 		cheeses = new boolean[xdim][ydim];
 		
-		//Menghitung posisi memulai ambil dari setpos dan mengambil Point2 dari file
-		int begin = (cntpos*(numCats+numCheeses))% set_pos.size();
-		ArrayList<Point> sementara = getPosAt(begin, numCheeses);
-		
-		// clear cheeses
-		for (int i=0; i<cheeses.length; i++) {
-			for (int j=0; j<cheeses[0].length; j++) cheeses[i][j] = false;
+		// loop until a valid cheese set is found
+		for(int t=0; t<CHEESE_TRIALS; t++) {
+			// clear cheeses
+			for (int i=0; i<cheeses.length; i++) {
+				for (int j=0; j<cheeses[0].length; j++) cheeses[i][j] = false;
+			}
+			
+			float xmid = xdim/(float)2;
+			float ymid = ydim/(float)2;
+			
+			// randomly assign cheeses.  
+			for (int i=0; i<numCheeses; i++) {
+				Dimension d = getRandomPos();
+				
+				// encourage cheeses to be in center
+				double dx2 = Math.pow(xmid - d.width,2);
+				double dy2 = Math.pow(ymid - d.height,2);
+				double dropperc = Math.sqrt((dx2+dy2) / (xmid*xmid + ymid*ymid));
+				if (Math.random() < dropperc || walls[d.width][d.height]) {
+					// reject this cheese
+					i--;
+					continue;
+				}
+				
+				
+				cheeses[d.width][d.height] = true;
+				chx[i] = d.width;
+				chy[i] = d.height;
+			}
+						
 		}
 		
-		// Assign cheeses from File.  
-		for(int i=0; i<sementara.size();i++){
-			cheeses[sementara.get(i).getX()][sementara.get(i).getY()] = true;
-		}
-		cntpos+=1;
 	}
 	
 	/******** cat generating functions **********/
