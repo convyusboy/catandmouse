@@ -447,7 +447,8 @@ public class CatAndMouseWorld implements RLWorld{
 		// Assign cheeses from File.  
 		for(int i=0; i<sementara.size();i++){
 			cheeses[sementara.get(i).getX()][sementara.get(i).getY()] = true;
-		}		
+		}
+		cntpos+=1;
 	}
 	
 	/******** cat generating functions **********/
