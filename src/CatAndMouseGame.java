@@ -66,7 +66,7 @@ public class CatAndMouseGame extends Thread {
 			}
 		}
 		a.mousescore += world.mousescore;
-		a.catscore += world.catscore;
+		//a.catscore += world.catscore;
 		
 		// turn off gameOn flag if only single game
 		if (single) gameOn = false;
@@ -88,6 +88,7 @@ public class CatAndMouseGame extends Thread {
 	public boolean[][] getWalls() { return world.walls; }
 	public boolean[][] getCats() { return world.cats; }
 	public boolean[][] getCheeses() { return world.cheeses; }
+	public int getPosisiMouse(){ return world.getPosisiMouse(); }
 	
 	public void makeMove() {
 		world.moveMouse();
