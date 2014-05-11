@@ -217,6 +217,7 @@ public class CatAndMouseWorld implements RLWorld{
 	public double calcReward() {
 		double newReward = 0;
 		if (isMouseOnCheese()) {
+			mousescore++;
 			newReward += getCheeseReward();
 		} else if (isMouseOnCat()) {
 			//catscore++;
