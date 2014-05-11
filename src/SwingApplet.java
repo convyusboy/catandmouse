@@ -3,12 +3,36 @@
 // load for early releases
 //import com.sun.java.swing.*;
 
-import javax.swing.*;
-import javax.swing.event.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.Hashtable;
+import java.util.Vector;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JApplet;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JRadioButton;
+import javax.swing.JSlider;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	static final int BW=300, BH=300, BX=8, BY=8, NUM_WALLS=20, NC=1, NK=1,
@@ -123,7 +147,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		tabbedPane.setEnabledAt(0,false);
 		
 		playWorld = new CatAndMouseWorld(xdim, ydim,trainWorld.walls,trainWorld.cats,trainWorld.cheeses);
-
+		
 		bp.setDimensions(xdim, ydim);
 		
 		rlc = new RLController(this, trainWorld, DELAY);
@@ -197,6 +221,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		}
 
 		// draw objects (cat over mouse over cheese)
+		mouse.setPosisiMouse(game.getPosisiMouse());
 		bp.setSquare(mouse, game.getMouse());
 					
 		// display text representation

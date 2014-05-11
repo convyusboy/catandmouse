@@ -8,6 +8,8 @@ public class boardObject {
 	int style;
 	int xcoord, ycoord;
 	
+	public void setPosisiMouse(int x){};
+	
 	public boardObject(Color c) {
 		this.objColour = c;
 		this.style = O_COL;

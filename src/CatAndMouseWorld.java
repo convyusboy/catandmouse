@@ -25,7 +25,7 @@ public class CatAndMouseWorld implements RLWorld{
 	public boolean[][] cats;
 	public boolean[][] cheeses;
 	
-	public int getPosisiMouse(int posisiMouse){
+	public int getPosisiMouse(){
 		return posisiMouse;
 	}
 
@@ -42,6 +42,7 @@ public class CatAndMouseWorld implements RLWorld{
 		chx = new int[numCheeses];
 		chy = new int[numCheeses];
 		
+		System.out.println("constructor 1");
 		resetState();
 	}
 	
@@ -61,13 +62,14 @@ public class CatAndMouseWorld implements RLWorld{
 		numCheeses = 0;
 		for(int i = 0; i < x; i++)
 			for(int j = 0; j < y; j++)
-				if (newcats[i][j]) numCheeses++;
+				if (newcheeses[i][j]) numCheeses++;
 		
 		cx = new int[numCats];
 		cy = new int[numCats];
 		chx = new int[numCheeses];
 		chy = new int[numCheeses];
 		
+		System.out.println("constructor 2");
 		resetState();
 	}
 
@@ -84,7 +86,8 @@ public class CatAndMouseWorld implements RLWorld{
 		return retDim;
 	}
 	
-	public void rotateKiri(int posisiMouse){
+	public void rotateKiri(){
+		System.out.println("rotate kiri!");
 		if(posisiMouse==Kanan) posisiMouse=KananAtas;
 		else if (posisiMouse==KananAtas) posisiMouse=Atas;
 		else if (posisiMouse==Atas) posisiMouse=KiriAtas;
@@ -95,7 +98,8 @@ public class CatAndMouseWorld implements RLWorld{
 		else if (posisiMouse==KananBawah) posisiMouse=Kanan;
 	}
 	
-	public void rotateKanan(int posisiMouse){
+	public void rotateKanan(){
+		System.out.println("rotate kanan!");
 		if(posisiMouse==Kanan) posisiMouse=KananBawah;
 		else if (posisiMouse==KananBawah) posisiMouse=Bawah;
 		else if (posisiMouse==Bawah) posisiMouse=KiriBawah;
@@ -107,19 +111,32 @@ public class CatAndMouseWorld implements RLWorld{
 	}
 	
 	// given action determine next state
-	public int[] getNextState(int posisiMouse) {
+	public int[] getNextState(int action) {
 		
 		// INI TINGGAL PILIH MAU ROTATE KEMANA
 		
-		// action is mouse action:  0=u 1=ur 2=r 3=dr ... 7=ul
-		Dimension d = getCoords(posisiMouse); 
-		int ax=d.width, ay=d.height;
-		if (legal(ax,ay)) {
-			// move agent
-			mx = ax; my = ay;
-		} else {
-			//System.err.println("Illegal action: "+action);
+		System.out.println("getnextstate, action = " + action);
+		// action is mouse action:  0=forward, 1=rotateKanan, 2=rotateKiri
+		switch (action){
+		case 0:
+			Dimension d = getCoords(action); 
+			int ax=d.width, ay=d.height;
+			if (legal(ax,ay)) {
+				// move agent
+				mx = ax; my = ay;
+			} else {
+				//System.err.println("Illegal action: "+action);
+			}
+			break;
+		case 1:
+			rotateKanan();
+			break;
+		case 2:
+			rotateKiri();
+			break;
 		}
+		
+		
 		// update world
 
 		waitingReward = calcReward();
@@ -135,17 +152,17 @@ public class CatAndMouseWorld implements RLWorld{
 		return legal(d.width, d.height);
 	}
 	
-	Dimension getCoords(int posisiMouse) {
+	Dimension getCoords(int action) {
 		int ax=mx, ay=my;
 		switch(posisiMouse) {
-			case Kanan: ay = mx + 1; break;
-			case KananAtas: ay = my + 1; ax = mx + 1; break;
-			case Atas: ax = my + 1; break;
-			case KiriAtas: ay = my + 1; ax = mx - 1; break;
-			case Kiri: ay = mx - 1; break;
-			case KiriBawah: ay = my - 1; ax = mx - 1; break;
-			case Bawah: ax = my - 1; break;
-			case KananBawah: ay = my - 1; ax = mx + 1; break;
+			case Kanan: ax = mx + 1; break;
+			case KananAtas: ay = my - 1; ax = mx + 1; break;
+			case Atas: ay = my - 1; break;
+			case KiriAtas: ay = my - 1; ax = mx - 1; break;
+			case Kiri: ax = mx - 1; break;
+			case KiriBawah: ay = my + 1; ax = mx - 1; break;
+			case Bawah: ay = my + 1; break;
+			case KananBawah: ay = my + 1; ax = mx + 1; break;
 			default: //System.err.println("Invalid action: "+action);
 		}
 		return new Dimension(ax, ay);
@@ -153,12 +170,14 @@ public class CatAndMouseWorld implements RLWorld{
 
 	// find action value given x,y=0,+-1
 	int getAction(int x, int y) {
-		int[][] vals={{7,0,1},
+		/*int[][] vals={{7,0,1},
 		              {6,0,2},
 					  {5,4,3}};
 		if ((x<-1) || (x>1) || (y<-1) || (y>1) || ((y==0)&&(x==0))) return -1;
 		int retVal = vals[y+1][x+1];
-		return retVal;
+		return retVal; */
+		
+		return 1;
 	}
 
 	public boolean endState() { return endGame(); }
@@ -415,6 +434,8 @@ public class CatAndMouseWorld implements RLWorld{
 	/******** cat generating functions **********/
 	void makeCats(int xdim, int ydim, int numCats) {
 		cats = new boolean[xdim][ydim];
+		
+		System.out.println("numCats = " + numCats);
 		
 		// loop until a valid cat set is found
 		for(int t=0; t<CAT_TRIALS; t++) {

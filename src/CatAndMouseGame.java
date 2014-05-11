@@ -88,6 +88,7 @@ public class CatAndMouseGame extends Thread {
 	public boolean[][] getWalls() { return world.walls; }
 	public boolean[][] getCats() { return world.cats; }
 	public boolean[][] getCheeses() { return world.cheeses; }
+	public int getPosisiMouse(){ return world.getPosisiMouse(); }
 	
 	public void makeMove() {
 		world.moveMouse();
