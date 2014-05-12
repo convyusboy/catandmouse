@@ -3,6 +3,7 @@ import javax.swing.*;
 
 public class CatAndMouseGame extends Thread {
 	long delay;
+	boolean first = true;
 	SwingApplet a;
 	RLPolicy policy;
 	CatAndMouseWorld world;
@@ -27,7 +28,10 @@ public class CatAndMouseGame extends Thread {
 			while(true) {
 				while(gameOn) {
 					gameActive = true;
-					resetGame();
+					if (first)
+						first = false;
+					else
+						resetGame();						
 					SwingUtilities.invokeLater(a); // draw initial state
 					runGame();
 					gameActive = false;

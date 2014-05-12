@@ -11,7 +11,7 @@ public class parser {
 	int by;
 	private ArrayList<Point> pos_train;
 	private ArrayList<Point> pos_play;
-	private int[][] train_map;
+	private boolean[][] train_map;
 	
 	public parser(){
 		cheese = 0;
@@ -19,7 +19,12 @@ public class parser {
 		mouse_limit = 0;
 		pos_train = new ArrayList<Point>();
 		pos_play = new ArrayList<Point>();
-		train_map = new int[10][10];
+		train_map = new boolean[100][100];
+		for(int i=0;i<100;i++){
+			for(int j=0;j<100;j++){
+				train_map[i][j]=false;
+			}
+		}
 		bx =0;
 		by =0;
 	}
@@ -64,7 +69,7 @@ public class parser {
 							}
 							else if(sCurrentLine.charAt(it)==')'){ 
 								temp_y = Integer.parseInt(temp);
-								pos_train.add(new Point(temp_x,temp_y));
+								pos_play.add(new Point(temp_x-1,temp_y-1));
 								temp_x = 0;
 								temp_y = 0;
 								it+=1;
@@ -99,7 +104,7 @@ public class parser {
 							}
 							else if(sCurrentLine.charAt(it)==')'){ 
 								temp_y = Integer.parseInt(temp);
-								pos_play.add(new Point(temp_x-1, temp_y-1));
+								pos_train.add(new Point(temp_x-1, temp_y-1));
 								temp_x = 0;
 								temp_y = 0;
 								it+=1;
@@ -131,7 +136,10 @@ public class parser {
 					sCurrentLine = br.readLine();
 					String[] numpang = sCurrentLine.split(" ");
 					for(int j=0; j<numpang.length; j++){
-						train_map[i][j] = Integer.parseInt(numpang[j]);
+						if (Integer.parseInt(numpang[j]) == 1)
+							train_map[i][j] = true;
+						else
+							train_map[i][j] = false;
 					}
 					i++;
 					bx = numpang.length;
@@ -171,11 +179,11 @@ public class parser {
 		return pos_train;
 	}
 	
-	public int[][] getTrainMap(){
+	public boolean[][] getTrainMap(){
 		return train_map;
 	}
 	
-	public int getTrainMapAt(int x, int y){
+	public boolean getTrainMapAt(int x, int y){
 		return train_map[x][y];
 	}
 	
@@ -197,6 +205,30 @@ public class parser {
 			}
 			System.out.println(" ");
 		}
+	}
+	
+	public int getNumWalls(){
+		int temp=0;
+		for(int i=0; i<bx; i++){
+			for(int j=0; j<by;j++){
+				if(train_map[i][j]==true){
+					temp+=1;
+				}
+			}
+		}
+		return temp;
+	}
+	
+	public ArrayList<Point> getWallsCoordinate(){
+		ArrayList<Point> temp = new ArrayList<Point>();
+		for(int i=0; i<bx; i++){
+			for(int j=0; j<by;j++){
+				if(train_map[i][j]==true){
+					temp.add(new Point(i,j));
+				}
+			}
+		}
+		return temp;
 	}
 }
 
@@ -224,4 +256,5 @@ class Point{
 	public int getY(){
 		return y;
 	}
+	
 }

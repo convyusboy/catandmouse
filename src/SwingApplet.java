@@ -37,7 +37,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 public class SwingApplet extends JApplet implements ActionListener,Runnable{
-	static final int BW=300, BH=300, BX=8, BY=8, NUM_WALLS=20, NC=1, NK=1,
+	static final int BW=300, BH=300, BX=10, BY=10, NUM_WALLS=20, NC=2, NK=4,
 		SAMP_W = 100, SAMP_H = 100;
 	static final int DEF_EPOCHS = 50000;
 	static final long DELAY=500;
@@ -87,8 +87,8 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	boardObject cat, mouse, cheese, back, hole, wall;
 	
 	//Upload File
-	public String namafile1;
-	public String namafile2;
+	public String namafile1 = "testing.txt";
+	public String namafile2 = "testing2.txt";
 					
 	public SwingApplet() {
 		getRootPane().putClientProperty("defeatSystemEventQueueCheck",Boolean.TRUE);
@@ -139,20 +139,16 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	}
 
 	public void worldInit(int xdim, int ydim, int numwalls, int numcats, int numcheeses) { 
-		trainWorld = new CatAndMouseWorld(xdim, ydim, numwalls, numcats, numcheeses);
+		playWorld = new CatAndMouseWorld(xdim, ydim, numwalls, numcats, numcheeses, namafile1);
+		trainWorld = playWorld;
+//		trainWorld = new CatAndMouseWorld(namafile1, namafile2);
 		gameInit(xdim,ydim);
 	}
-//	public void worldInit(boolean[][] givenWalls) {
-//		int xdim = givenWalls.length, ydim = givenWalls[0].length;
-//		trainWorld = new CatAndMouseWorld(xdim, ydim,givenWalls);
-//		gameInit(xdim,ydim);		
-//	}
+
 	private void gameInit(int xdim, int ydim) {
 		// disable this pane
 		tabbedPane.setEnabledAt(0,false);
-		
-		playWorld = new CatAndMouseWorld(xdim, ydim,trainWorld.walls,trainWorld.cats,trainWorld.cheeses);
-		
+				
 		bp.setDimensions(xdim, ydim);
 		
 		rlc = new RLController(this, trainWorld, DELAY);
