@@ -1,37 +1,32 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
  
 public class parser {
 	private int cheese;
 	private int cat;
 	private int mouse_limit;
-	private int[][] pos_train;
-	private int[][] pos_play;
-	private int[][] train_map;
+	int bx;
+	int by;
+	private ArrayList<Point> pos_train;
+	private ArrayList<Point> pos_play;
+	private boolean[][] train_map;
 	
 	public parser(){
 		cheese = 0;
 		cat = 0;
 		mouse_limit = 0;
-		pos_train = new int[10][10];
-		for(int i=0; i< 10;i++){
-			for(int j=0; j< 10;j++){
-				pos_train[i][j]=0;
+		pos_train = new ArrayList<Point>();
+		pos_play = new ArrayList<Point>();
+		train_map = new boolean[100][100];
+		for(int i=0;i<100;i++){
+			for(int j=0;j<100;j++){
+				train_map[i][j]=false;
 			}
 		}
-		pos_play = new int[10][10];
-		for(int i=0; i< 10;i++){
-			for(int j=0; j< 10;j++){
-				pos_play[i][j]=0;
-			}
-		}
-		train_map = new int[10][10];
-		for(int i=0; i< 10;i++){
-			for(int j=0; j< 10;j++){
-				pos_play[i][j]=0;
-			}
-		}
+		bx =0;
+		by =0;
 	}
 	
 	public void readFromFile(String namafile, int type){
@@ -74,7 +69,7 @@ public class parser {
 							}
 							else if(sCurrentLine.charAt(it)==')'){ 
 								temp_y = Integer.parseInt(temp);
-								pos_train[temp_x-1][temp_y-1] = 1;
+								pos_play.add(new Point(temp_x-1,temp_y-1));
 								temp_x = 0;
 								temp_y = 0;
 								it+=1;
@@ -109,7 +104,7 @@ public class parser {
 							}
 							else if(sCurrentLine.charAt(it)==')'){ 
 								temp_y = Integer.parseInt(temp);
-								pos_play[temp_x-1][temp_y-1] = 1;
+								pos_train.add(new Point(temp_x-1, temp_y-1));
 								temp_x = 0;
 								temp_y = 0;
 								it+=1;
@@ -136,16 +131,20 @@ public class parser {
 			{
 				//Variable penampung
 				String sCurrentLine;
-				int it =0;
-				int temp_x = 0, temp_y = 0;
-				String temp = "";
-				for(int i = 0; i< 10; i++){
+				int i=0;
+				while((sCurrentLine=br.readLine())!=null){
 					sCurrentLine = br.readLine();
-					String[] numpang = sCurrentLine.split(" ", 10);
-					for(int j=0; j<10; j++){
-						train_map[i][j] = Integer.parseInt(numpang[j]);
+					String[] numpang = sCurrentLine.split(" ");
+					for(int j=0; j<numpang.length; j++){
+						if (Integer.parseInt(numpang[j]) == 1)
+							train_map[i][j] = true;
+						else
+							train_map[i][j] = false;
 					}
+					i++;
+					bx = numpang.length;
 				}
+				by = i;
 			} 
 			catch (IOException e) {
 				e.printStackTrace();
@@ -157,6 +156,13 @@ public class parser {
 		return cheese;
 	}
 	
+	public int getBx(){
+		return bx;
+	}
+	
+	public int getBy(){
+		return by;
+	}
 	public int getCat(){
 		return cat;
 	}
@@ -165,46 +171,32 @@ public class parser {
 		return mouse_limit;
 	}
 	
-	public int[][] getCheesePlay(){
+	public ArrayList<Point> getCheesePlay(){
 		return pos_play;
 	}
 	
-	public int[][] getCheeseTrain(){
+	public ArrayList<Point> getCheeseTrain(){
 		return pos_train;
 	}
 	
-	public int[][] getTrainMap(){
+	public boolean[][] getTrainMap(){
 		return train_map;
 	}
 	
-	public int getPlayCheeseAt(int x, int y){
-		return pos_play[x][y];
-	}
-	
-	public int getTrainCheeseAt(int x, int y){
-		return pos_train[x][y];
-	}
-	
-	public int getTrainMapAt(int x, int y){
+	public boolean getTrainMapAt(int x, int y){
 		return train_map[x][y];
 	}
 	
 	public void PrintDetailParser(){
 		System.out.println("Cheese :"+ cheese);
 		System.out.println("Cat :"+ cat);
-		System.out.println("Cheese Pelatihan :");
-		for(int i=0; i< 10;i++){
-			for(int j=0; j< 10;j++){
-				System.out.print(pos_train[i][j]);
-			}
-			System.out.println(" ");
+		System.out.println("Posisi Pelatihan :");
+		for(int i=0; i< pos_train.size();i++){
+			System.out.println(pos_train.get(i).getX()+" , "+ pos_train.get(i).getY());
 		}
-		System.out.println("Cheese Permainan :");
-		for(int i=0; i< 10;i++){
-			for(int j=0; j< 10;j++){
-				System.out.print(pos_play[i][j]);
-			}
-			System.out.println(" ");
+		System.out.println("Posisi Permainan :");
+		for(int i=0; i< pos_play.size();i++){
+			System.out.println(pos_play.get(i).getX()+" , "+ pos_play.get(i).getY());
 		}
 		System.out.println("Peta Pelatihan :");
 		for(int i=0; i< 10;i++){
@@ -214,4 +206,55 @@ public class parser {
 			System.out.println(" ");
 		}
 	}
+	
+	public int getNumWalls(){
+		int temp=0;
+		for(int i=0; i<bx; i++){
+			for(int j=0; j<by;j++){
+				if(train_map[i][j]==true){
+					temp+=1;
+				}
+			}
+		}
+		return temp;
+	}
+	
+	public ArrayList<Point> getWallsCoordinate(){
+		ArrayList<Point> temp = new ArrayList<Point>();
+		for(int i=0; i<bx; i++){
+			for(int j=0; j<by;j++){
+				if(train_map[i][j]==true){
+					temp.add(new Point(i,j));
+				}
+			}
+		}
+		return temp;
+	}
+}
+
+class Point{
+	int x;
+	int y;
+	
+	Point(){
+		x=0;
+		y=0;
+	}
+	Point(int _x, int _y){
+		x= _x;
+		y= _y;
+	}
+	public void setX(int _x){
+		x=_x;
+	}
+	public void setY(int _y){
+		y=_y;
+	}
+	public int getX(){
+		return x;
+	}
+	public int getY(){
+		return y;
+	}
+	
 }

@@ -3,6 +3,7 @@ import javax.swing.*;
 
 public class CatAndMouseGame extends Thread {
 	long delay;
+	boolean first = true;
 	SwingApplet a;
 	RLPolicy policy;
 	CatAndMouseWorld world;
@@ -27,7 +28,10 @@ public class CatAndMouseGame extends Thread {
 			while(true) {
 				while(gameOn) {
 					gameActive = true;
-					resetGame();
+					if (first)
+						first = false;
+					else
+						resetGame();						
 					SwingUtilities.invokeLater(a); // draw initial state
 					runGame();
 					gameActive = false;
@@ -64,9 +68,10 @@ public class CatAndMouseGame extends Thread {
 			} catch (InterruptedException e) {
 				System.out.println("interrupted.");
 			}
+			a.mousescore += world.mousescore;
 		}
-		a.mousescore += world.mousescore;
-		a.catscore += world.catscore;
+		
+		//a.catscore += world.catscore;
 		
 		// turn off gameOn flag if only single game
 		if (single) gameOn = false;
@@ -88,6 +93,7 @@ public class CatAndMouseGame extends Thread {
 	public boolean[][] getWalls() { return world.walls; }
 	public boolean[][] getCats() { return world.cats; }
 	public boolean[][] getCheeses() { return world.cheeses; }
+	public int getPosisiMouse(){ return world.getPosisiMouse(); }
 	
 	public void makeMove() {
 		world.moveMouse();

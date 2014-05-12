@@ -13,8 +13,9 @@ public class mouseObject extends boardObject {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public void setPositot(int positot){
-		posisiMouse = positot;
+	@Override
+	public void setPosisiMouse(int posisiMouse){
+		this.posisiMouse = posisiMouse;
 	}
 	
 	@Override

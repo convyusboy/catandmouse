@@ -37,7 +37,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 public class SwingApplet extends JApplet implements ActionListener,Runnable{
-	static final int BW=300, BH=300, BX=8, BY=8, NUM_WALLS=20, NC=1, NK=1,
+	static final int BW=300, BH=300, BX=10, BY=10, NUM_WALLS=20, NC=2, NK=4,
 		SAMP_W = 100, SAMP_H = 100;
 	static final int DEF_EPOCHS = 50000;
 	static final long DELAY=500;
@@ -77,7 +77,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	JButton startbutt, stopbutt, pausebutt;
 	boardPanel bp;
 	public int mousescore=0, catscore =0;
-	JLabel catscorelabel, mousescorelabel;
+	JLabel mousescorelabel;
 	final String MS_TEXT = "Mouse Score:", CS_TEXT = "Cat Score:";
 	JSlider speed, smoothSlider;
 	Image catImg, mouseImg[], mos;
@@ -86,6 +86,9 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 			
 	boardObject cat, mouse, cheese, back, hole, wall;
 	
+	//Upload File
+	public String namafile1 = "testing.txt";
+	public String namafile2 = "testing2.txt";
 					
 	public SwingApplet() {
 		getRootPane().putClientProperty("defeatSystemEventQueueCheck",Boolean.TRUE);
@@ -136,20 +139,16 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	}
 
 	public void worldInit(int xdim, int ydim, int numwalls, int numcats, int numcheeses) { 
-		trainWorld = new CatAndMouseWorld(xdim, ydim, numwalls, numcats, numcheeses);
+		playWorld = new CatAndMouseWorld(xdim, ydim, numwalls, numcats, numcheeses, namafile1);
+		trainWorld = playWorld;
+//		trainWorld = new CatAndMouseWorld(namafile1, namafile2);
 		gameInit(xdim,ydim);
 	}
-//	public void worldInit(boolean[][] givenWalls) {
-//		int xdim = givenWalls.length, ydim = givenWalls[0].length;
-//		trainWorld = new CatAndMouseWorld(xdim, ydim,givenWalls);
-//		gameInit(xdim,ydim);		
-//	}
+
 	private void gameInit(int xdim, int ydim) {
 		// disable this pane
 		tabbedPane.setEnabledAt(0,false);
-		
-		playWorld = new CatAndMouseWorld(xdim, ydim,trainWorld.walls,trainWorld.cats,trainWorld.cheeses);
-
+				
 		bp.setDimensions(xdim, ydim);
 		
 		rlc = new RLController(this, trainWorld, DELAY);
@@ -184,7 +183,8 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	public void updateBoard() {
 		// update score panels
 		mousescorelabel.setText(MS_TEXT+" "+Integer.toString(mousescore));
-		catscorelabel.setText(CS_TEXT+" "+Integer.toString(catscore));
+		//catscorelabel.setText(CS_TEXT+" "+Integer.toString(catscore));
+		updateScore();
 		if (game.newInfo) {
 			updateScore();
 			game.newInfo = false;
@@ -223,6 +223,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		}
 
 		// draw objects (cat over mouse over cheese)
+		mouse.setPosisiMouse(game.getPosisiMouse());
 		bp.setSquare(mouse, game.getMouse());
 					
 		// display text representation
@@ -304,7 +305,8 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	}
 
 	void updateScore() {
-		double newScore = Math.round(1000*((double)mousescore)/(catscore + mousescore))/10;
+		double newScore = mousescore;
+		//System.out.println("haha " + mousescore);
 		winPerc.setText(Double.toString(newScore)+"%");
 		graphPanel.updateScores();
 		graphPanel.repaint();
@@ -345,9 +347,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 			            //Opening the File Chosen
 						File file = fc.getSelectedFile();
 			            System.out.println("Opening: " + file.getName() + ".");
-			            parser parserai = new parser();
-			            parserai.readFromFile(file.getName(), 1);
-			            //parserai.PrintDetailParser(); //buat Debugging
+			            namafile1= file.getName();
 			        } else {
 			        	System.out.println("Open command cancelled by user.");
 			        }
@@ -362,9 +362,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 			            //Opening the File Chosen
 						File file = fc.getSelectedFile();
 			            System.out.println("Opening: " + file.getName() + ".");
-			            parser parserai = new parser();
-			            parserai.readFromFile(file.getName(), 2);
-			            //parserai.PrintDetailParser(); //buat Debugging
+			            namafile2 = file.getName();
 			        } else {
 			        	System.out.println("Open command cancelled by user.");
 			        }
@@ -681,7 +679,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		ImageIcon cat = new ImageIcon(catImg);
 		ImageIcon mouse = new ImageIcon(mos);
 		mousescorelabel = new JLabel(MS_TEXT, mouse, JLabel.RIGHT);
-		catscorelabel = new JLabel(CS_TEXT, cat, JLabel.RIGHT);
+		//catscorelabel = new JLabel(CS_TEXT, cat, JLabel.RIGHT);
 
 		// reset scores
 		//JPanel hbox = new JPanel();
@@ -690,7 +688,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		reset.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				mousescore = 0;
-				catscore = 0;
+				//catscore = 0;
 				updateBoard();
 			}			
 		});
@@ -702,7 +700,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 
 		scorePane.add(mousescorelabel);
 		scorePane.add(winPerc);
-		scorePane.add(catscorelabel);
+		//scorePane.add(catscorelabel);
 		scorePane.add(reset);
 		
 		scorePane.setBorder(BorderFactory.createTitledBorder("Scores"));
@@ -781,7 +779,7 @@ class chartPanel extends JPanel {
 		lastm=m; lastc=c;
 		double score;
 		if ((m+c)==0) score = 0;
-		else score = ((double)dm) / (dm+dc);
+		else score = ((double)dm);
 		addScore(score);	
 	}
 	
