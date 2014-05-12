@@ -260,6 +260,18 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		progress.setMinimum(0);
 		progress.setMaximum(episodes);
 		progress.setValue(0);
+		
+		//ngetes progress bar, ngga penting
+		/*progress.setMaximum(10);
+		for(int pro=0;pro<=10;pro++){
+			progress.setValue(pro);
+			try {
+			    Thread.sleep(1000);
+			} catch(InterruptedException ex) {
+			    Thread.currentThread().interrupt();
+			}
+		}*/
+		
 				
 		// enable stop button
 		stopTraining.setEnabled(true);
