@@ -243,7 +243,9 @@ public class CatAndMouseWorld implements RLWorld {
 		 * (y<-1) || (y>1) || ((y==0)&&(x==0))) return -1; int retVal =
 		 * vals[y+1][x+1]; return retVal;
 		 */
-
+		
+		
+		
 		return 1;
 	}
 
@@ -278,6 +280,7 @@ public class CatAndMouseWorld implements RLWorld {
 		double newReward = 0;
 		if (isMouseOnCheese()) {
 			newReward += getCheeseReward();
+			cheeses[mx][my] = false;
 		} else if (isMouseOnCat()) {
 			newReward -= getDeathReward();
 		} else
@@ -289,26 +292,15 @@ public class CatAndMouseWorld implements RLWorld {
 	}
 
 	public boolean isMouseOnCat() {
-		for (int i = 0; i < numCats; i++) {
-			if ((cx[i] == mx) && (cy[i] == my))
-				return true;
-		}
-		return false;
+		return cats[mx][my];
 	}
 
 	public boolean isMouseOnCheese() {
-		for (int i = 0; i < numCheeses; i++) {
-			if ((chx[i] == mx) && (chy[i] == my))
-				return true;
-		}
-		return false;
+		return cheeses[mx][my];
 	}
 
 	public boolean isMouseHitWall() {
-
-		// nanti ini diisinya sama batasan temboknya apa
-
-		return false;
+		return walls[mx][my];
 	}
 
 	public void setRandomPos() {
@@ -338,8 +330,11 @@ public class CatAndMouseWorld implements RLWorld {
 
 	boolean endGame() {
 		// return (((mx==hx)&&(my==hy)&& gotCheese) || ((cx==mx) && (cy==my)));
-
-		return isMouseOnCat();
+		int n_cheese = 0;
+		for (int i = 0; i < numCheeses; i++){
+			if (cheeses[chx[i]][chy[i]]) n_cheese++;
+		}
+		return (isMouseOnCat() || (n_cheese == 0));
 	}
 
 	Dimension getRandomPos() {
