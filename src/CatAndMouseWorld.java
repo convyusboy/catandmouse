@@ -263,14 +263,102 @@ public class CatAndMouseWorld implements RLWorld {
 	}
 
 	/******* end RLWorld functions **********/
+	
+	/*public boolean isThereWall(int x, int y){
+		for (int i=0; i<numWalls; i++){
+			return walls[x][y];
+		}
+		return false;
+	}
+	
+	public boolean isThereCat(int x, int y){
+		for (int i=0; i<numCats; i++){
+			if(cx[i]==x && cy[i]==y){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isThereMouse(int x, int y){
+		for (int i=0; i<numCheeses; i++){
+			if(chx[i]==x && chy[i]==y){
+				return true;
+			}
+		}
+		return false;
+	}*/
 
 	public int[] getState() {
 		// translates current state into int array
 		stateArray = new int[NUM_OBJECTS];
+		boolean notsee = true;
+		int kolom = 0, baris = 0;
+		
+		switch(posisiMouse){
+			case 0:
+				kolom = 1;
+				baris = 0;
+				break;
+			case 1:
+				kolom = 1;
+				baris = 1;
+				break;
+			case 2:
+				kolom = 0;
+				baris = 1;
+				break;
+			case 3:
+				kolom = -1;
+				baris = 1;
+				break;
+			case 4:
+				kolom = -1;
+				baris = 0;
+				break;
+			case 5:
+				kolom = -1;
+				baris = -1;
+				break;
+			case 6:
+				kolom = 0;
+				baris = -1;
+				break;
+			case 7:
+				kolom = 1;
+				baris = -1;
+				break;
+		}
+
 		// jarak berapa
-		stateArray[0] = mx;
-		// objeknya apa -> 1.wall, 2.cat, 3.mouse 4.kosong
-		stateArray[1] = my;
+		//stateArray[0] = .... ;
+		// objeknya apa -> 1.wall, 2.cat, 3.cheese 4.kosong
+		//stateArray[1] = .... ;
+		
+		for(int i=1; notsee && i<=mouseLimit; i++){
+			if(mx+(kolom*i) == bx || mx+(kolom*i) == -1 || my+(baris*i) == by || my+(baris*i) == -1){
+				stateArray[0]=i;
+				stateArray[1]=1;
+				notsee = false;
+			} else {
+				if(walls[mx+(kolom*i)][my+(baris*i)]){
+					stateArray[0]=i;
+					stateArray[1]=1;
+					notsee = false;
+				} else if(cats[mx+(kolom*i)][my+(baris*i)]){
+					stateArray[0]=i;
+					stateArray[1]=2;
+					notsee = false;
+				} else if(cheeses[mx+(kolom*i)][my+(baris*i)]){
+					stateArray[0]=i;
+					stateArray[1]=3;
+					notsee = false;
+				}
+			}
+		}
+		stateArray[0]=mouseLimit;
+		stateArray[1]=4;
+		
 		return stateArray;
 	}
 
