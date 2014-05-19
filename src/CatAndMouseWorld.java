@@ -18,7 +18,7 @@ public class CatAndMouseWorld implements RLWorld {
 	public int hx, hy;
 	public boolean gotCheese = false;
 
-	public int catscore = 0, mousescore = 0;
+	public int catscore = 0, mousescore = 0, episode=1;
 	public int cheeseReward, deathPenalty;
 
 	static final int NUM_OBJECTS = 2, NUM_ACTIONS = 2, WALL_TRIALS = 100,
@@ -184,7 +184,7 @@ public class CatAndMouseWorld implements RLWorld {
 		// update world
 
 		waitingReward = calcReward();
-		System.out.println(mousescore);
+		//System.out.println(mousescore);
 		return getState();
 	}
 
@@ -273,6 +273,7 @@ public class CatAndMouseWorld implements RLWorld {
 	public int[] resetState() {
 		catscore = 0;
 		mousescore = 0;
+		episode = 1;
 		setRandomPos();
 		return getState();
 	}

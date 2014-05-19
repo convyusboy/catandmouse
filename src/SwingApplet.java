@@ -76,9 +76,9 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	// play panel components
 	JButton startbutt, stopbutt, pausebutt;
 	boardPanel bp;
-	public int mousescore=0, catscore =0;
-	JLabel mousescorelabel;
-	final String MS_TEXT = "Mouse Score:", CS_TEXT = "Cat Score:";
+	public int mousescore=0, catscore =0, episode=1;
+	JLabel mousescorelabel, episodelabel;
+	final String MS_TEXT = "Mouse Score:", CS_TEXT = "Cat Score:", EP_TEXT = "Episode : " ;
 	JSlider speed, smoothSlider;
 	Image catImg, mouseImg[], mos;
 	chartPanel graphPanel;
@@ -183,6 +183,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	public void updateBoard() {
 		// update score panels
 		mousescorelabel.setText(MS_TEXT+" "+Integer.toString(mousescore));
+		episodelabel.setText(EP_TEXT+ " "+Integer.toString(episode));
 		//catscorelabel.setText(CS_TEXT+" "+Integer.toString(catscore));
 		updateScore();
 		if (game.newInfo) {
@@ -307,7 +308,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	void updateScore() {
 		double newScore = mousescore;
 		//System.out.println("haha " + mousescore);
-		winPerc.setText(Double.toString(newScore)+"%");
+		//winPerc.setText(Double.toString(newScore)+"%");
 		graphPanel.updateScores();
 		graphPanel.repaint();
 		game.gameActive = true;		
@@ -679,6 +680,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		ImageIcon cat = new ImageIcon(catImg);
 		ImageIcon mouse = new ImageIcon(mos);
 		mousescorelabel = new JLabel(MS_TEXT, mouse, JLabel.RIGHT);
+		episodelabel = new JLabel(EP_TEXT, JLabel.RIGHT);
 		//catscorelabel = new JLabel(CS_TEXT, cat, JLabel.RIGHT);
 
 		// reset scores
@@ -688,6 +690,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		reset.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				mousescore = 0;
+				episode = 1;
 				//catscore = 0;
 				updateBoard();
 			}			
@@ -699,6 +702,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		//scorePane.add(hbox);
 
 		scorePane.add(mousescorelabel);
+		scorePane.add(episodelabel);
 		scorePane.add(winPerc);
 		//scorePane.add(catscorelabel);
 		scorePane.add(reset);
@@ -774,13 +778,20 @@ class chartPanel extends JPanel {
 	}
 	
 	public void updateScores() {
-		int m = a.mousescore, c = a.catscore;
+		int m = a.mousescore, c = a.episode;
 		int dm = m-lastm, dc = c-lastc;
 		lastm=m; lastc=c;
-		double score;
-		if ((m+c)==0) score = 0;
-		else score = ((double)dm);
-		addScore(score);	
+		double score, score2;
+		if ((m+c)==0) {
+			score = 0;
+			score2 = 0;
+		}
+		else {
+			score = ((double)dm);
+			score2 = ((double)dc);
+		}
+		addScore(score);
+		addScore(score2);
 	}
 	
 	public void paintComponent(Graphics g) {
