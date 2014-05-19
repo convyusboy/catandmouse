@@ -100,7 +100,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		catImg = getImage(getCodeBase(), "cat.gif");
 		mos = getImage(getCodeBase(), "mouse.gif");
 		mouseImg = new Image[8];
-			for (int i = 0; i < 8; i++) mouseImg[i] = getImage(getCodeBase(), (i+1) + ".gif");
+			for (int i = 0; i < 8; i++) mouseImg[i] = getImage(getCodeBase(), (i+1) + "a.gif");
 		Image wallImg = getImage(getCodeBase(), "wall.gif");
 		Image cheeseImg = getImage(getCodeBase(), "cheese.gif");
 		Image floorImg = getImage(getCodeBase(), "floor.gif");
