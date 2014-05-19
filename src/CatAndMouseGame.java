@@ -54,7 +54,8 @@ public class CatAndMouseGame extends Thread {
 			if (mousetype == GREEDY) {
 				action = world.mouseAction();
 			} else if (mousetype == SMART) {
-				action = policy.getBestAction(world.getState());
+				if (Math.random() < 0.2) action = world.mouseAction();
+				else action = policy.getBestAction(world.getState());
 			} else {
 				System.err.println("Invalid mouse type:"+mousetype);
 			}

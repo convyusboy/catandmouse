@@ -133,7 +133,7 @@ public class parser {
 				String sCurrentLine;
 				int i=0;
 				while((sCurrentLine=br.readLine())!=null){
-					sCurrentLine = br.readLine();
+//					sCurrentLine = br.readLine();
 					String[] numpang = sCurrentLine.split(" ");
 					for(int j=0; j<numpang.length; j++){
 						if (Integer.parseInt(numpang[j]) == 1)

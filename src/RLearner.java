@@ -105,20 +105,20 @@ public class RLearner {
 		    double max_Q;
 		    double new_Q;
 
-			while( ! thisWorld.endState() ) {
-		    
+			while( ! thisWorld.endState() ) {				
 			    if( ! running ) break;
 					action = selectAction( state );
+					
 		    		newstate = thisWorld.getNextState( action );
 				    reward = thisWorld.getReward();
-		    
+				    
 				    this_Q = policy.getQValue( state, action );
 				    max_Q = policy.getMaxQValue( newstate );
-
+				    
 				    // Calculate new Value for Q
 				    new_Q = this_Q + alpha * ( reward + gamma * max_Q - this_Q );
 				    policy.setQValue( state, action, new_Q );
-
+				    
 				    // Set state to the new state.
 				    state = newstate;
 			}
@@ -224,7 +224,6 @@ public class RLearner {
     } // runEpoch
     
     private int selectAction( int[] state ) {
-
 	double[] qValues = policy.getQValuesAt( state );
 	int selectedAction = -1;
     
@@ -245,7 +244,6 @@ public class RLearner {
 	    else {
 	    
 		for( int action = 0 ; action < qValues.length ; action++ ) {
-		    
 		    if( qValues[action] > maxQ ) {
 			selectedAction = action;
 			maxQ = qValues[action];
@@ -267,15 +265,14 @@ public class RLearner {
 	    // Select random action if all qValues == 0 or exploring.
 	    if ( selectedAction == -1 ) {
 		
-		// System.out.println( "Exploring ..." );
+		 System.out.println( "Exploring ..." );
 		selectedAction = (int) (Math.random() * qValues.length);
 	    }
 	    
 	    // Choose new action if not valid.
-	    while( ! thisWorld.validAction( selectedAction ) ) {
-		
-		selectedAction = (int) (Math.random() * qValues.length);
-		// System.out.println( "Invalid action, new one:" + selectedAction);
+	    if (Math.random() < 0.6) selectedAction = 0;
+	    if ( ! thisWorld.validAction( selectedAction ) ){
+	    	selectedAction = 1;
 	    }
 	    
 	    break;

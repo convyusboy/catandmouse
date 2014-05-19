@@ -63,6 +63,7 @@ public class CatAndMouseWorld implements RLWorld {
 		numWalls = parserai.getNumWalls();
 		numCats = parserai.getCat();
 		numCheeses = parserai.getCheese();
+//		System.out.println("CONSTRUCT " + bx + " " + by + " " + numCats + " " + numCheeses);
 
 		cx = new int[numCats];
 		cy = new int[numCats];
@@ -251,14 +252,13 @@ public class CatAndMouseWorld implements RLWorld {
 		
 		// 0 = maju
 		// 1 = rotate
-		
 		if (stateArray[1] != 3){
 			if (stateArray[0] <= 1)
 				return 1;
 			else {
 				double rdm = Math.random();
 				if (rdm < 0.6) return 0;
-				else if (rdm < 0.95) return 1;
+				else if (rdm < 0.995) return 1;
 				else return 2;
 			}
 		}
@@ -590,13 +590,12 @@ public class CatAndMouseWorld implements RLWorld {
 			int tx = set_pos.get(cntpos).getX();
 			int ty = set_pos.get(cntpos).getY();
 			cntpos = (cntpos + 1) % set_pos.size();
-			System.out.println(tx + " " + ty);
-//			while (walls[tx][ty]) {
-//				tx = set_pos.get(cntpos).getX();
-//				ty = set_pos.get(cntpos).getY();
-//				cntpos = (cntpos + 1) % set_pos.size();
-//			}
-
+			while (walls[tx][ty]) {
+				tx = set_pos.get(cntpos).getX();
+				ty = set_pos.get(cntpos).getY();
+				cntpos = (cntpos + 1) % set_pos.size();
+			}
+//			System.out.println(tx + " " + ty);
 			cheeses[tx][ty] = true;
 			chx[i] = tx;
 			chy[i] = ty;

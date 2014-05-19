@@ -165,7 +165,9 @@ public class RLPolicy {
 	
 	if( selectedAction == -1 ) {
 	    //System.out.println("RANDOM Choice !" );
-	    selectedAction = (int) ( Math.random() * qValues.length );
+		if (Math.random() < 0.6) selectedAction = 2;
+		else selectedAction = 1;
+	    //selectedAction = (int) ( Math.random() * qValues.length );
 	}
 	
 	return selectedAction;

@@ -140,8 +140,8 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 
 	public void worldInit(int xdim, int ydim, int numwalls, int numcats, int numcheeses) { 
 		playWorld = new CatAndMouseWorld(xdim, ydim, numwalls, numcats, numcheeses, namafile1);
-		trainWorld = playWorld;
-//		trainWorld = new CatAndMouseWorld(namafile1, namafile2);
+//		trainWorld = playWorld;
+		trainWorld = new CatAndMouseWorld(namafile1, namafile2);
 		gameInit(xdim,ydim);
 	}
 
