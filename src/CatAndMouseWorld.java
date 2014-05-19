@@ -21,7 +21,7 @@ public class CatAndMouseWorld implements RLWorld {
 	public int catscore = 0, mousescore = 0;
 	public int cheeseReward, deathPenalty;
 
-	static final int NUM_OBJECTS = 2, NUM_ACTIONS = 8, WALL_TRIALS = 100,
+	static final int NUM_OBJECTS = 2, NUM_ACTIONS = 2, WALL_TRIALS = 100,
 			CAT_TRIALS = 100, CHEESE_TRIALS = 100;
 	static final double INIT_VALS = 0;
 	static final int Kanan = 0, KananAtas = 1, Atas = 2, KiriAtas = 3,
@@ -244,9 +244,26 @@ public class CatAndMouseWorld implements RLWorld {
 		 * vals[y+1][x+1]; return retVal;
 		 */
 		
+		// jarak berapa
+		//stateArray[0] = .... ;
+		// objeknya apa -> 1.wall, 2.cat, 3.cheese 4.kosong
+		//stateArray[1] = .... ;
 		
+		// 0 = maju
+		// 1 = rotate
 		
-		return 1;
+		if (stateArray[1] != 3){
+			if (stateArray[0] <= 1)
+				return 1;
+			else {
+				double rdm = Math.random();
+				if (rdm < 0.6) return 0;
+				else if (rdm < 0.95) return 1;
+				else return 2;
+			}
+		}
+		else 
+			return 0;
 	}
 
 	public boolean endState() {
@@ -304,15 +321,15 @@ public class CatAndMouseWorld implements RLWorld {
 				break;
 			case 1:
 				kolom = 1;
-				baris = 1;
+				baris = -1;
 				break;
 			case 2:
 				kolom = 0;
-				baris = 1;
+				baris = -1;
 				break;
 			case 3:
 				kolom = -1;
-				baris = 1;
+				baris = -1;
 				break;
 			case 4:
 				kolom = -1;
@@ -320,15 +337,15 @@ public class CatAndMouseWorld implements RLWorld {
 				break;
 			case 5:
 				kolom = -1;
-				baris = -1;
+				baris = 1;
 				break;
 			case 6:
 				kolom = 0;
-				baris = -1;
+				baris = 1;
 				break;
 			case 7:
 				kolom = 1;
-				baris = -1;
+				baris = 1;
 				break;
 		}
 
@@ -338,29 +355,33 @@ public class CatAndMouseWorld implements RLWorld {
 		//stateArray[1] = .... ;
 		
 		for(int i=1; notsee && i<=mouseLimit; i++){
-			if(mx+(kolom*i) == bx || mx+(kolom*i) == -1 || my+(baris*i) == by || my+(baris*i) == -1){
+			int dx = mx + kolom*i;
+			int dy = my + baris*i;
+			if(dx >= bx || dx <= -1 || dy >= by || dy <= -1){
 				stateArray[0]=i;
 				stateArray[1]=1;
 				notsee = false;
 			} else {
-				if(walls[mx+(kolom*i)][my+(baris*i)]){
+				if(walls[dx][dy]){
 					stateArray[0]=i;
 					stateArray[1]=1;
 					notsee = false;
-				} else if(cats[mx+(kolom*i)][my+(baris*i)]){
+				} else if(cats[dx][dy]){
 					stateArray[0]=i;
 					stateArray[1]=2;
 					notsee = false;
-				} else if(cheeses[mx+(kolom*i)][my+(baris*i)]){
+				} else if(cheeses[dx][dy]){
 					stateArray[0]=i;
 					stateArray[1]=3;
 					notsee = false;
 				}
 			}
 		}
-		stateArray[0]=mouseLimit;
-		stateArray[1]=4;
-		
+		if (notsee){
+			stateArray[0]=mouseLimit;
+			stateArray[1]=4;
+		}
+		System.out.println("state[0] = " + stateArray[0] + ", state[1] = " + stateArray[1]);
 		return stateArray;
 	}
 
