@@ -10,14 +10,22 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -81,6 +89,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 	final String MS_TEXT = "Mouse Score:", CS_TEXT = "Cat Score:", EP_TEXT = "Episode : " ;
 	JSlider speed, smoothSlider;
 	Image catImg, mouseImg[], mos;
+	Image backgroundImg;
 	chartPanel graphPanel;
 	JLabel winPerc;
 			
@@ -95,10 +104,34 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		
 	}
 	
+	public void PlayMusic(){
+		 try {
+	         // Open an audio input stream.
+			 File soundFile = new File("raisa.wav");
+	         AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+	         // Get a sound clip resource.
+	         Clip clip = AudioSystem.getClip();
+	         // Open audio clip and load samples from the audio input stream.
+	         clip.open(audioIn);
+	         clip.start();
+	         clip.loop(clip.LOOP_CONTINUOUSLY);
+	      } catch (UnsupportedAudioFileException e) {
+	         e.printStackTrace();
+	      } catch (IOException e) {
+	         e.printStackTrace();
+	      } catch (LineUnavailableException e) {
+	         e.printStackTrace();
+	      }
+	}
+	
+	
 	public void init() {
+		PlayMusic();
+		
 		// load images
 		catImg = getImage(getCodeBase(), "cat.gif");
 		mos = getImage(getCodeBase(), "mouse.gif");
+		backgroundImg = getImage(getCodeBase(), "raisa.jpg");
 		mouseImg = new Image[8];
 			for (int i = 0; i < 8; i++) mouseImg[i] = getImage(getCodeBase(), (i+1) + "a.gif");
 		Image wallImg = getImage(getCodeBase(), "wall.gif");
@@ -424,6 +457,7 @@ public class SwingApplet extends JApplet implements ActionListener,Runnable{
 		// add random world option
 		pane.add(customWorld());
 		pane.setBorder(BorderFactory.createTitledBorder("Color Your Worlds"));
+		
 		return pane;
 	}
 	
